@@ -1,0 +1,150 @@
+/* ── Empty state ── */
+.tx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 24px;
+  gap: 10px;
+  color: #6b7280;
+}
+
+.tx-empty-icon {
+  margin-bottom: 4px;
+  opacity: 0.5;
+}
+
+.tx-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.tx-empty-sub {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* ── Table ── */
+.tx-wrap {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tx-header-row,
+.tx-row {
+  display: grid;
+  grid-template-columns: 160px 130px 130px 110px 1fr;
+  align-items: center;
+  padding: 0 4px;
+  gap: 8px;
+}
+
+.tx-header-row {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.tx-col {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tx-row {
+  padding: 14px 4px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s;
+  border-radius: 6px;
+}
+
+.tx-row:hover {
+  background: #f9fafb;
+}
+
+/* Override col text styles inside rows */
+.tx-row .tx-col {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #374151;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.tx-row .tx-col--time {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Usage cell */
+.tx-col--usage {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.tx-kwh {
+  font-weight: 600;
+  color: #111827;
+}
+
+.tx-units {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Price cell */
+.tx-price {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Status badge */
+.tx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tx-badge--live {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.tx-badge--live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.tx-badge--sim {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Hash link */
+.tx-link {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.tx-link:hover {
+  text-decoration: underline;
+}
+
+.tx-no-hash {
+  color: #d1d5db;
+}

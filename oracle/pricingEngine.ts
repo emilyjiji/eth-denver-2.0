@@ -19,18 +19,20 @@
  *     effectiveRate = (baseRate × congestionFactor) / 10 000
  *     cost = usageDelta × effectiveRate
  *
- * Rate units: wei per kWh-unit (1 unit = 0.001 kWh).
- *   Assumes 1 HBAR ≈ 10^18 wei (EVM convention).
- *   0.08 HBAR / kWh = 0.08 × 10^18 / 1000 wei per unit = 8 × 10^13 wei/unit.
+ * Rate units: tinybar per kWh-unit (1 unit = 0.001 kWh).
+ *   Hedera EVM uses tinybar (1 HBAR = 10^8 tinybar) as the base monetary unit.
+ *   Rates are intentionally small so the 30 HBAR deposit lasts hundreds of hours.
  */
 
 export class PricingEngine {
-  // Base rates in wei per kWh-unit (1 unit = 0.001 kWh).
-  // 1 HBAR = 10^18 wei; divide by 1000 for per-unit scaling.
+  // Base rates in tinybar per kWh-unit (1 unit = 0.001 kWh).
+  // Hedera EVM stores msg.value in tinybar (1 HBAR = 10^8 tinybar).
+  // Rate = price_per_kWh_HBAR * 10^8 / 1000 (convert to per-unit tinybar).
+  // Using 10× reduced scale so 30 HBAR deposit lasts hundreds of hours.
   private static readonly RATES = {
-    OFF_PEAK: 80_000_000_000_000n,  // 0.08 HBAR/kWh → 8 × 10^13 wei/unit
-    STANDARD: 150_000_000_000_000n, // 0.15 HBAR/kWh → 1.5 × 10^14 wei/unit
-    PEAK:     250_000_000_000_000n, // 0.25 HBAR/kWh → 2.5 × 10^14 wei/unit
+    OFF_PEAK:  80n, // ≈ 0.008 HBAR/kWh in tinybar scale
+    STANDARD: 150n, // ≈ 0.015 HBAR/kWh in tinybar scale
+    PEAK:     250n, // ≈ 0.025 HBAR/kWh in tinybar scale
   } as const;
 
   /**

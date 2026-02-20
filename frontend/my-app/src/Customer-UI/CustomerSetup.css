@@ -1,0 +1,161 @@
+/* ── Page wrapper ── */
+.cs-page {
+  min-height: calc(100vh - 56px); /* subtract navbar height */
+  background: #e8eaf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px 80px; /* extra bottom pad pulls card slightly above center */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+/* ── Card ── */
+.cs-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 40px 32px;
+}
+
+/* ── Header ── */
+.cs-header {
+  margin-bottom: 28px;
+}
+
+.cs-logo {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.cs-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.cs-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ── Form ── */
+.cs-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cs-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cs-label-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  cursor: default;
+}
+
+.cs-input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.cs-input::placeholder {
+  color: #9ca3af;
+}
+
+.cs-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* ── Select ── */
+.cs-select-wrapper {
+  position: relative;
+}
+
+.cs-select {
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  background: #fff;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cs-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.cs-select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+/* ── Footer / Next button ── */
+.cs-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.cs-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.cs-next-btn:hover:not(.cs-next-btn--disabled) {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.cs-next-btn--disabled {
+  background: #c7d2fe;
+  cursor: not-allowed;
+}

@@ -23,7 +23,7 @@ import { UsageSimulator } from './usageSimulator';
 import { PricingEngine }   from './pricingEngine';
 import type { StreamState } from './types';
 
-const REPORT_INTERVAL_MS = 5 * 60 * 1_000; // 5 minutes
+const REPORT_INTERVAL_MS = 15 * 60 * 1_000; // 15 minutes
 const MAX_RETRIES        = 3;
 const RETRY_DELAY_MS     = 30_000;          // 30 seconds
 

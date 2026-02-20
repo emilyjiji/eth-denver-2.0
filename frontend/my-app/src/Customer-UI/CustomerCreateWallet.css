@@ -1,0 +1,202 @@
+/* ── Page wrapper ── */
+.ccw-page {
+  min-height: calc(100vh - 56px);
+  background: #e8eaf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px 80px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+/* ── Card ── */
+.ccw-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 40px 32px;
+}
+
+/* ── Header ── */
+.ccw-header {
+  margin-bottom: 24px;
+}
+
+.ccw-logo {
+  margin-bottom: 16px;
+}
+
+.ccw-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.ccw-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Form ── */
+.ccw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Wallet address card ── */
+.ccw-wallet-card {
+  background: #f8f9fc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ccw-wallet-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #9ca3af;
+}
+
+.ccw-wallet-address {
+  font-size: 13px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  color: #374151;
+}
+
+.ccw-wallet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #10b981;
+}
+
+/* ── How it works ── */
+.ccw-how {
+  background: #f8f9fc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.ccw-how-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #9ca3af;
+  margin: 0 0 12px;
+}
+
+.ccw-how-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ccw-how-list li {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.ccw-how-icon {
+  flex-shrink: 0;
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+/* ── Consent checkbox ── */
+.ccw-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.ccw-consent:has(.ccw-checkbox:checked) {
+  border-color: #6366f1;
+  background: #f5f3ff;
+}
+
+.ccw-checkbox {
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+
+.ccw-consent-text {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* ── Footer ── */
+.ccw-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.ccw-secure {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ── Button ── */
+.ccw-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.ccw-next-btn:hover:not(.ccw-next-btn--disabled) {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.ccw-next-btn--disabled {
+  background: #c7d2fe;
+  cursor: not-allowed;
+}

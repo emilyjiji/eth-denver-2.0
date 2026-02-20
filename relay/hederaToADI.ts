@@ -10,7 +10,7 @@ dotenv.config();
  * - SettlementExecuted (PAID) -> Mint with status PAID
  * - SettlementFailed (OUTSTANDING) -> Mint with status OUTSTANDING
  *
- * Deployed ADI Contract: 0x2f78CC8Bccc8dfed1544bf5feF4108dA78C6A8fD
+ * Deployed ADI Contract: 0x31246c37f75cC7fe6f669651c66d27E6708De1b1
  */
 
 // ============ Configuration ============

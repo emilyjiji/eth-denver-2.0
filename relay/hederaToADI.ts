@@ -20,7 +20,7 @@ const ADI_RPC = process.env.ADI_RPC || "https://rpc.ab.testnet.adifoundation.ai"
 const PRIVATE_KEY = process.env.RELAY_PRIVATE_KEY || process.env.DEPLOYER_PRIVATE_KEY;
 
 const HEDERA_PAYMENT_CONTRACT = process.env.HEDERA_STREAM_ADDRESS || "";
-const ADI_RECEIVABLE_CONTRACT = process.env.ADI_CERTIFICATE_ADDRESS || "0x2f78CC8Bccc8dfed1544bf5feF4108dA78C6A8fD";
+const ADI_RECEIVABLE_CONTRACT = process.env.ADI_CERTIFICATE_ADDRESS || "0x31246c37f75cC7fe6f669651c66d27E6708De1b1";
 
 const POLL_INTERVAL = 12000; // 12 seconds
 

@@ -4,10 +4,11 @@
  *
  * Three pricing factors:
  *
- *   Factor 1 — Time-of-Use base rate ($/kWh mapped to wei per kWh-unit):
- *     OFF-PEAK  00:00–06:00, 22:00–24:00  → 0.08 HBAR/kWh
- *     STANDARD  06:00–17:00               → 0.15 HBAR/kWh
- *     PEAK      17:00–22:00               → 0.25 HBAR/kWh
+ *   Factor 1 — Time-of-Use base rate (targets ~$0.04–0.06 per 15-min report,
+ *              consistent with a $200–250/month residential bill):
+ *     OFF-PEAK  00:00–06:00, 22:00–24:00  →  20 000 tinybar/unit
+ *     STANDARD  06:00–17:00               →  50 000 tinybar/unit
+ *     PEAK      17:00–22:00               →  85 000 tinybar/unit
  *
  *   Factor 2 — Grid congestion multiplier (basis points):
  *     < 70 % load  → 10 000  (1.0×)
@@ -26,13 +27,20 @@
 
 export class PricingEngine {
   // Base rates in tinybar per kWh-unit (1 unit = 0.001 kWh).
-  // Hedera EVM stores msg.value in tinybar (1 HBAR = 10^8 tinybar).
-  // Rate = price_per_kWh_HBAR * 10^8 / 1000 (convert to per-unit tinybar).
-  // Using 10× reduced scale so 30 HBAR deposit lasts hundreds of hours.
+  // Hedera: 1 HBAR = 10^8 tinybar.  HBAR ≈ $0.07.
+  //
+  // Target: ~$0.04–0.06 per 15-min report, matching a $200–250/month residential bill.
+  // Usage simulator generates ~400–1800 units/period at STANDARD (avg ~1000 units).
+  //
+  // At 1000 units, STANDARD (50 000), 1.3× congestion:
+  //   1000 × 50 000 × 1.3 / 10^8 × $0.07 ≈ $0.046  ✓
+  //
+  // Variation comes from both usage range AND congestion multiplier (1.0–2.5×),
+  // giving roughly $0.02–$0.09 per report.
   private static readonly RATES = {
-    OFF_PEAK:  80n, // ≈ 0.008 HBAR/kWh in tinybar scale
-    STANDARD: 150n, // ≈ 0.015 HBAR/kWh in tinybar scale
-    PEAK:     250n, // ≈ 0.025 HBAR/kWh in tinybar scale
+    OFF_PEAK:  20_000n, // overnight/low-use  ≈ $0.01–0.02/period
+    STANDARD:  50_000n, // daytime            ≈ $0.04–0.06/period
+    PEAK:      85_000n, // evening            ≈ $0.06–0.10/period
   } as const;
 
   /**

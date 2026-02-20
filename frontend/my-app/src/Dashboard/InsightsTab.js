@@ -4,6 +4,7 @@ import {
   Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 import './InsightsTab.css';
+import { formatUsdc } from '../hooks/useHbarPrice';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const SLOT_MS = 15 * 60 * 1000; // 15 minutes per slot
@@ -30,20 +31,14 @@ function slotLabel(ms) {
   return m === 0 ? `${displayH}${ampm}` : `${displayH}:${String(m).padStart(2, '0')}`;
 }
 
-/** Start of the chart: 1pm today, or 1 hour ago if it's still before 1pm */
-function getDemoStartMs() {
-  const d = new Date();
-  d.setHours(13, 0, 0, 0);
-  if (d.getTime() > Date.now()) {
-    // before 1pm — go back 1 hour, snap to 15-min boundary
-    return Math.floor((Date.now() - 60 * 60 * 1000) / SLOT_MS) * SLOT_MS;
-  }
-  return d.getTime();
-}
-
 /** Build one entry per 15-min slot, filled with real events where they exist */
 function buildSlots(events) {
-  const startMs     = getDemoStartMs();
+  // Start from 1 hour before the first event, or 2 hours ago if no events yet.
+  // Snapped to 15-min boundary so slot labels line up cleanly.
+  const anchorMs = events.length
+    ? events[0].timestamp - 60 * 60 * 1000
+    : Date.now() - 2 * 60 * 60 * 1000;
+  const startMs = Math.floor(anchorMs / SLOT_MS) * SLOT_MS;
   const currentSlot = Math.floor(Date.now() / SLOT_MS) * SLOT_MS;
   const slots = [];
 
@@ -73,10 +68,11 @@ function buildSlots(events) {
 }
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
-function CustomTooltip({ active, payload }) {
+function CustomTooltip({ active, payload, hbarPriceUsd }) {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
   if (!d) return null;
+  const costUsdc = hbarPriceUsd != null ? d.cost * hbarPriceUsd : null;
   return (
     <div className="it-tooltip">
       <p className="it-tooltip-time">{d.label}</p>
@@ -95,7 +91,9 @@ function CustomTooltip({ active, payload }) {
           </p>
           <p className="it-tooltip-row">
             <span className="it-tooltip-key">Cost</span>
-            <span className="it-tooltip-val">{d.cost.toFixed(6)} HBAR</span>
+            <span className="it-tooltip-val">
+              {costUsdc != null ? formatUsdc(costUsdc) + ' USDC' : d.cost.toFixed(6) + ' HBAR'}
+            </span>
           </p>
         </>
       )}
@@ -104,13 +102,14 @@ function CustomTooltip({ active, payload }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-function InsightsTab({ events = [], loading = false }) {
+function InsightsTab({ events = [], loading = false, hbarPriceUsd = null }) {
 
   const slots = useMemo(() => buildSlots(events), [events]);
 
   // Stats from real events only
-  const totalKwh   = events.reduce((s, e) => s + e.usageDelta / 1000, 0).toFixed(3);
-  const totalCost  = (events.reduce((s, e) => s + Number(e.cost), 0) / 1e8).toFixed(6);
+  const totalKwh      = events.reduce((s, e) => s + e.usageDelta / 1000, 0).toFixed(3);
+  const totalCostHbar = events.reduce((s, e) => s + Number(e.cost), 0) / 1e8;
+  const totalCostUsdc = hbarPriceUsd != null ? totalCostHbar * hbarPriceUsd : null;
   const realSlots  = slots.filter(s => s.isReal);
   const avgRate    = realSlots.length
     ? (realSlots.reduce((s, d) => s + (d.pricePerKwh ?? 0), 0) / realSlots.length).toFixed(5)
@@ -152,11 +151,13 @@ function InsightsTab({ events = [], loading = false }) {
         <div className="it-stat-card">
           <span className="it-stat-label">Total Usage</span>
           <span className="it-stat-value">{totalKwh} kWh</span>
-          <span className="it-stat-sub">since 1 pm</span>
+          <span className="it-stat-sub">since 2 pm</span>
         </div>
         <div className="it-stat-card">
           <span className="it-stat-label">Total Cost</span>
-          <span className="it-stat-value">{totalCost} HBAR</span>
+          <span className="it-stat-value">
+            {totalCostUsdc != null ? formatUsdc(totalCostUsdc) + ' USDC' : totalCostHbar.toFixed(6) + ' HBAR'}
+          </span>
           <span className="it-stat-sub">stream charged</span>
         </div>
         <div className="it-stat-card">
@@ -218,7 +219,7 @@ function InsightsTab({ events = [], loading = false }) {
                 tickFormatter={v => v === 0 ? '' : v.toFixed(4)}
                 width={52}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={(props) => <CustomTooltip {...props} hbarPriceUsd={hbarPriceUsd} />} />
 
               <Bar yAxisId="kwh" dataKey="kwh" name="Usage" radius={[4, 4, 0, 0]} maxBarSize={32}>
                 {slots.map((s, i) => (
@@ -250,10 +251,12 @@ function InsightsTab({ events = [], loading = false }) {
         <div className="it-reports-card">
           <p className="it-reports-title">Recent reports</p>
           {[...events].reverse().slice(0, 8).map((ev, i) => {
-            const h    = new Date(ev.timestamp).getHours();
-            const per  = classifyHour(h);
-            const kwh  = (ev.usageDelta / 1000).toFixed(3);
-            const cost = (Number(ev.cost) / 1e8).toFixed(6);
+            const h        = new Date(ev.timestamp).getHours();
+            const per      = classifyHour(h);
+            const kwh      = (ev.usageDelta / 1000).toFixed(3);
+            const costHbar = Number(ev.cost) / 1e8;
+            const costUsdc = hbarPriceUsd != null ? costHbar * hbarPriceUsd : null;
+            const cost     = costUsdc != null ? formatUsdc(costUsdc) + ' USDC' : costHbar.toFixed(6) + ' HBAR';
             return (
               <div key={i} className="it-report-row">
                 <span className="it-report-dot" style={{ background: TIERS[per].color }} />
@@ -262,7 +265,7 @@ function InsightsTab({ events = [], loading = false }) {
                 </span>
                 <span className="it-report-period" style={{ color: TIERS[per].color }}>{per}</span>
                 <span className="it-report-kwh">{kwh} kWh</span>
-                <span className="it-report-cost">{cost} HBAR</span>
+                <span className="it-report-cost">{cost}</span>
                 {ev.txHash && (
                   <a
                     className="it-report-hash"

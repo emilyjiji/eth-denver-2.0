@@ -10,10 +10,10 @@ const ORACLE_KEY       = '0xcb3b838945bac89df6cf4e76e8a6395f29460ad1013cf4002c98
 // Hedera EVM stores msg.value in tinybar (1 HBAR = 10^8 tinybar).
 // All monetary values (depositBalance, accruedAmount, cost) are in tinybar.
 // BASE_RATE is tinybar per usage-unit (kWh×1000).
-const STREAM_ID    = 2n;       // stream 2 — 15-min settlement interval
+const STREAM_ID    = 3n;       // stream 3 — realistic rates, 200 HBAR deposit
 const NEW_USAGE    = 1500n;    // first cumulative report: 1.500 kWh
 const NONCE        = 1n;       // first nonce for stream 2
-const BASE_RATE    = 150n;     // 150 tinybar/unit — STANDARD tier (matches oracle pricingEngine)
+const BASE_RATE    = 50_000n;  // 50 000 tinybar/unit — STANDARD tier ≈ $0.04–0.06/period (matches oracle pricingEngine)
 const CONGESTION   = 13000n;   // 1.3× moderate congestion (basis pts, 10000 = 1×)
 const USAGE_DELTA  = 1500n;    // units (÷1000 = kWh)
 

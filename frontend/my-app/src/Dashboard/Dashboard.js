@@ -4,6 +4,7 @@ import Transactions from './Transactions';
 import HomeTab from './HomeTab';
 import InsightsTab from './InsightsTab';
 import { useOnChainUsage } from '../hooks/useOnChainUsage';
+import { useHbarPrice } from '../hooks/useHbarPrice';
 
 const NAV_ITEMS = [
   {
@@ -40,7 +41,13 @@ const NAV_ITEMS = [
 
 function Dashboard({ accountData }) {
   const [active, setActive] = useState('home');
-  const { events, loading: eventsLoading } = useOnChainUsage();
+  const { events: rawEvents, loading: eventsLoading } = useOnChainUsage();
+  const hbarPriceUsd = useHbarPrice();
+
+  // Fixed cutoff: hide the one stream-3 report that ran at old (too-high) rates.
+  // Fixed date (not rolling) so it works correctly tomorrow and beyond.
+  const CUTOFF_MS = new Date('2026-02-20T15:55:00').getTime();
+  const events = rawEvents.filter(ev => ev.timestamp >= CUTOFF_MS);
 
   // Normalize on-chain events → transaction row format.
   // Chain events are the source of truth — don't merge stale React state.
@@ -98,7 +105,7 @@ function Dashboard({ accountData }) {
           {active === 'home' && (
             <div>
               <h2 className="db-page-title">Home</h2>
-              <HomeTab accountData={accountData} />
+              <HomeTab accountData={accountData} events={events} hbarPriceUsd={hbarPriceUsd} />
             </div>
           )}
 
@@ -106,7 +113,7 @@ function Dashboard({ accountData }) {
             <div>
               <h2 className="db-page-title">Transactions</h2>
               <div className="db-card">
-                <Transactions transactions={allTransactions} />
+                <Transactions transactions={allTransactions} hbarPriceUsd={hbarPriceUsd} />
               </div>
             </div>
           )}
@@ -114,7 +121,7 @@ function Dashboard({ accountData }) {
           {active === 'insights' && (
             <div>
               <h2 className="db-page-title">Insights</h2>
-              <InsightsTab events={events} loading={eventsLoading} />
+              <InsightsTab events={events} loading={eventsLoading} hbarPriceUsd={hbarPriceUsd} />
             </div>
           )}
 

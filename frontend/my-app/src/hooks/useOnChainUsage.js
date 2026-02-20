@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 
 const RPC_URL          = 'https://testnet.hashio.io/api';
 const CONTRACT_ADDRESS = '0xc4A1Ef40bC4771D8c2f5352429A737a980B40692';
-const STREAM_ID        = 2; // stream 2 — 15-min settlement interval
+const STREAM_ID        = 3; // stream 3 — realistic rates (~$0.14/kWh), 200 HBAR deposit
 const POLL_INTERVAL_MS = 30_000; // re-fetch every 30 seconds
 const LOOKBACK_BLOCKS  = 12_000;  // ~10 hours on Hedera testnet (~3 s/block)
 

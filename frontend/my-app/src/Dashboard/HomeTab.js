@@ -3,17 +3,18 @@ import './HomeTab.css';
 const RELOAD_THRESHOLD = '$5.00';   // trigger reload below this
 const RELOAD_TARGET    = '$200.00'; // reload up to this cap
 
-function truncate(addr) {
-  if (!addr) return '—';
-  return `${addr.slice(0, 10)}...${addr.slice(-6)}`;
-}
-
 function copyToClipboard(text) {
   navigator.clipboard?.writeText(text).catch(() => {});
 }
 
-function HomeTab({ accountData }) {
+function HomeTab({ accountData, events = [], hbarPriceUsd = null }) {
   const wallet = accountData?.generatedWallet;
+
+  const totalSpentHbar = events.reduce((s, e) => s + Number(e.cost), 0) / 1e8;
+  const totalSpentUsdc = hbarPriceUsd != null ? totalSpentHbar * hbarPriceUsd : null;
+  const usdcDisplay    = totalSpentUsdc != null
+    ? '$' + totalSpentUsdc.toFixed(4)
+    : '…';
 
   return (
     <div className="ht-root">
@@ -22,8 +23,8 @@ function HomeTab({ accountData }) {
       <div className="ht-stats">
 
         <div className="ht-stat-card">
-          <span className="ht-stat-label">USDC Balance</span>
-          <span className="ht-stat-value">$0.00</span>
+          <span className="ht-stat-label">Total Spent</span>
+          <span className="ht-stat-value">{usdcDisplay} USDC</span>
           <span className="ht-stat-sub">Hedera Testnet</span>
         </div>
 

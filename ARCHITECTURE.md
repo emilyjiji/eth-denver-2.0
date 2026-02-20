@@ -9,27 +9,44 @@ This app demonstrates **self-running, contract-driven payment streaming** for el
 ### High-Level Flow
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│           FRONTEND DASHBOARD (Read-only Updates)             │
+┌──────────────────────────────────────────────────────────────┐
+│  FRONTEND DASHBOARD (Reads from On-Chain Oracle Contract)    │
 │   Shows: Usage, Pricing, Schedule Status, Payment History   │
-└─────────────────┬───────────────────────────────────────────┘
-                  │ WebSocket (subscribe to state changes)
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│              HEDERA SMART CONTRACT                           │
-│          (Contract-Driven Scheduling)                        │
-│                                                              │
-│  1. Backend reports hourly usage to contract                │
-│  2. Contract calculates: usage × rate = payment             │
-│  3. Contract CREATES ScheduleCreate transaction             │
-│  4. Hedera Schedule Service auto-executes at scheduled time │
-│  5. Payment automatically deducted from user account        │
-│  6. Contract emits event → Dashboard shows status update    │
-└──────────────────────────────────────────────────────────────┘
+└────────────────┬─────────────────────────────────────────────┘
+                 │ Direct contract reads
+                 │ (no WebSocket)
+┌────────────────▼──────────────────────────────────────────┐
+│         ON-CHAIN ORACLE CONTRACT                          │
+│    (PriceAndUsageOracle.sol)                              │
+│                                                           │
+│  Stores latest:                                           │
+│  - Current usage (KWh)                                    │
+│  - Current price ($/KWh)                                  │
+│  - Timestamp                                              │
+│  - Historical data                                        │
+└────────────────┬──────────────────────────────────────────┘
+                 │ Reads from
+┌────────────────▼──────────────────────────────────────────┐
+│      PAYMENT SCHEDULER CONTRACT                           │
+│  (ElectricityPaymentScheduler.sol)                         │
+│                                                           │
+│  1. Reads current usage from Oracle                       │
+│  2. Reads current price from Oracle                       │
+│  3. Calculates payment: usage × rate                      │
+│  4. Creates ScheduleCreate transaction                    │
+│  5. Hedera auto-executes payment                          │
+│  6. Emits events on-chain                                 │
+└────────────────┬──────────────────────────────────────────┘
+                 │
+         ┌───────▼──────────────────┐
+         │ HEDERA SCHEDULE SERVICE  │
+         │ Auto-executes at time    │
+         └───────────────────────────┘
 
-KEY: All payment logic lives in the smart contract.
-     Backend only reports usage data.
-     NO backend script triggers payments.
+KEY: All data lives on-chain via Oracle contract.
+     Frontend queries Oracle directly (no WebSocket needed).
+     Contract reads from Oracle for deterministic decisions.
+     NO off-chain servers for critical operations.
 ```
 
 ---
@@ -52,14 +69,16 @@ KEY: All payment logic lives in the smart contract.
 - TypeScript for type safety
 - TailwindCSS for styling
 - Recharts for real-time charts
-- WebSocket client for live updates
+- ethers.js or Hedera SDK for contract interaction
 - SWR (React hook for data fetching)
 
 **Real-time Features**:
-- WebSocket connection to backend for live usage updates (every 5-10 seconds)
+- Direct contract reads from Oracle (no WebSocket dependency)
+- Polling Oracle contract every 5-10 seconds for updates
 - Live chart rendering showing last 24 hours of usage
 - Current KWh rate and projected hourly cost
 - Transaction notifications when payments are scheduled
+- All data verifiable on Hedera explorer
 
 ---
 
@@ -73,9 +92,10 @@ KEY: All payment logic lives in the smart contract.
 
 #### a) **Express Server** (`server.ts`)
 - REST API endpoints for dashboard data
-- WebSocket server for pushing real-time updates
+- Oracle contract writer (updates usage/price on-chain)
 - CORS for frontend communication
 - Static file serving for production
+- Health check endpoints
 
 #### b) **Hedera Integration Service** (`services/hedera.ts`)
 
@@ -113,7 +133,7 @@ Hedera automatically executes these scheduled transactions
 - Random spikes: 0.5-2 KWh at random times (AC kick-in, charging devices)
 - Gaussian distribution for realistic variability
 
-**Output**: Hourly usage in KWh sent to dashboard via WebSocket
+**Output**: Hourly usage in KWh written to Oracle contract on-chain
 
 #### d) **Pricing Engine** (`services/pricingEngine.ts`)
 
@@ -227,16 +247,82 @@ When Hour Passes:
 
 ---
 
-### 4. OBSERVABILITY & SCHEDULE LIFECYCLE
+### 4. ORACLE CONTRACT (PriceAndUsageOracle.sol)
+
+**Location**: `./src/contracts/PriceAndUsageOracle.sol`
+
+**Core Responsibility**: On-chain data store for usage and pricing
+
+#### Key Functions:
+
+```solidity
+contract PriceAndUsageOracle {
+  struct OracleData {
+    uint256 usageKwh;           // Current KWh usage
+    uint256 pricePerKwh;        // Current price per KWh
+    uint256 pricingTier;        // 0=off-peak, 1=standard, 2=peak
+    uint256 timestamp;          // When data was updated
+    uint256 dailyProjectedCost; // Projected cost for day
+  }
+  
+  OracleData public latestData;
+  mapping(uint256 => OracleData) public historicalData; // timestamp => data
+  
+  // Called by authorized backend to update usage/price
+  function updateUsageAndPrice(
+    uint256 usageKwh,
+    uint256 pricePerKwh,
+    uint256 pricingTier,
+    uint256 dailyProjectedCost
+  ) external onlyAuthorized {
+    latestData = OracleData({
+      usageKwh: usageKwh,
+      pricePerKwh: pricePerKwh,
+      pricingTier: pricingTier,
+      timestamp: block.timestamp,
+      dailyProjectedCost: dailyProjectedCost
+    });
+    
+    historicalData[block.timestamp] = latestData;
+    emit OracleUpdated(usageKwh, pricePerKwh, block.timestamp);
+  }
+  
+  // Anyone can query latest data
+  function getLatestData() external view returns (OracleData memory) {
+    return latestData;
+  }
+  
+  // Query historical data
+  function getHistoricalData(uint256 timestamp) 
+    external view returns (OracleData memory) 
+  {
+    return historicalData[timestamp];
+  }
+}
+```
+
+#### Why On-Chain Oracle?
+
+✅ **No WebSocket dependency** - All data lives on-chain  
+✅ **Decentralized reads** - Frontend queries directly from contract  
+✅ **Verifiable** - All data on Hedera explorer  
+✅ **Self-running** - Schedule contract reads from oracle, not backend  
+✅ **Permanent record** - Complete history stored on-chain  
+
+---
+
+### 5. OBSERVABILITY & SCHEDULE LIFECYCLE
 
 **Dashboard shows complete schedule lifecycle**:
 
 ```
 USER CREATES ACCOUNT
         ↓
-BACKEND REPORTS USAGE (hourly via oracle)
+BACKEND CALCULATES USAGE & PRICE
         ↓
-SMART CONTRACT RECEIVES USAGE DATA
+BACKEND WRITES TO ORACLE CONTRACT
+        ↓
+SCHEDULE CONTRACT READS FROM ORACLE
         ↓
 [CREATED] Schedule transaction created in Hedera
         ↓
@@ -272,65 +358,96 @@ SMART CONTRACT RECEIVES USAGE DATA
 
 ---
 
-### 5. DATA FLOW DIAGRAM
+### 6. DATA FLOW DIAGRAM (Oracle-Based Architecture)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    FRONTEND (Next.js)                        │
-│  Dashboard shows: Usage graph, Current rate, Schedule List  │
-│                   Status: CREATED/PENDING/EXECUTED/FAILED   │
-└────────────────┬──────────────────────────────────────────┘
-                 │ WebSocket (subscribe to updates)
+┌──────────────────────────────────────────────────────────────┐
+│                    FRONTEND (Next.js)                         │
+│  Dashboard shows: Usage graph, Current rate, Schedule List   │
+│                   Reads directly from Oracle contract         │
+└────────────────┬───────────────────────────────────────────┘
+                 │ Direct contract reads (every 5-10s)
+                 │ No WebSocket needed
                  │
-┌────────────────▼──────────────────────────────────────────┐
-│              BACKEND (Express + WebSocket)                 │
+┌────────────────▼───────────────────────────────────────────┐
+│          ORACLE CONTRACT (On-Chain Data)                    │
+│          (PriceAndUsageOracle.sol)                          │
 │                                                             │
-│  ┌──────────────────┐      ┌──────────────────┐           │
-│  │ Usage Simulator  │      │ Pricing Engine   │           │
-│  │                  │      │                  │           │
-│  │ - Base load      │ ────→│ - Time-of-day    │           │
-│  │ - Spikes         │      │ - Usage-based    │           │
-│  │ - Randomness     │      │ - Seasonal       │           │
-│  └──────────────────┘      └──────────────────┘           │
-│           │                          │                     │
-│           └──────────────┬───────────┘                     │
-│                          │                                 │
-│        ┌────────────────────────────────────────┐          │
-│        │ HOURLY: Report Usage to Contract       │          │
-│        │ (via Hedera Contract Call)             │          │
-│        └────────┬───────────────────────────────┘          │
-└─────────────────┼────────────────────────────────────────┘
-                  │
-         ┌────────▼────────────────┐
-         │ HEDERA SMART CONTRACT   │
-         │ (Contract-Driven)       │
-         │                         │
-         │ 1. Receive usage data   │
-         │ 2. Calculate payment    │
-         │ 3. CREATE SCHEDULE      │
-         │ 4. Emit events          │
-         └────────┬────────────────┘
-                  │
-                  ├─→ ScheduleCreate Transaction
-                  │
-         ┌────────▼────────────────────────────┐
-         │ HEDERA SCHEDULE SERVICE             │
-         │ (Auto-Execution)                    │
-         │                                     │
-         │ At scheduled time:                  │
-         │ Execute CryptoTransfer              │
-         │ (User → Provider)                   │
-         │                                     │
-         │ Result: Emit Success/Failure event  │
-         └────────┬─────────────────────────────┘
-                  │
-                  └─→ Event Streamed Back to Contract
-                      Dashboard Listens for Events
+│  Stores:                                                    │
+│  - Latest usage (KWh)                                       │
+│  - Latest price ($/KWh)                                     │
+│  - Pricing tier (off-peak/standard/peak)                    │
+│  - Daily projection                                         │
+│  - Historical data by timestamp                             │
+│                                                             │
+│  Events emitted on each update                              │
+└────────────────┬───────────────────────────────────────────┘
+                 │
+         ┌───────┴────────────────────┐
+         │                            │
+         ▼                            ▼
+    ┌─────────────────┐       ┌──────────────────────┐
+    │ PAYMENT         │       │ BACKEND              │
+    │ SCHEDULER       │       │ (Express)            │
+    │ CONTRACT        │       │                      │
+    │                 │       │ Usage Simulator ────→│
+    │ Reads Oracle    │       │ Pricing Engine    ──→│
+    │ Creates         │       │                      │
+    │ schedules       │       │ Updates Oracle ──────│
+    │                 │       │ (hourly)             │
+    │ Calls HSS       │       │                      │
+    └────────┬────────┘       └──────────────────────┘
+             │
+             ├─→ ScheduleCreate Transaction
+             │
+    ┌────────▼────────────────────────────┐
+    │ HEDERA SCHEDULE SERVICE             │
+    │ (Auto-Execution)                    │
+    │                                     │
+    │ At scheduled time:                  │
+    │ Execute CryptoTransfer              │
+    │ (User → Provider)                   │
+    │                                     │
+    │ Result: Emit Success/Failure event  │
+    └────────┬─────────────────────────────┘
+             │
+             └─→ Events queryable by frontend
+                 Dashboard shows status update
+```
+
+---
+
+### 7. ORACLE UPDATE FLOW (Backend)
+
+```typescript
+// Every hour:
+1. Simulator generates usage (2.5 KWh)
+2. Pricing engine calculates rate ($0.12/KWh)
+3. Backend calls Oracle contract:
+   
+   updateUsageAndPrice(
+     usageKwh: 2.5,
+     pricePerKwh: 0.12,
+     pricingTier: 1,  // 0=off-peak, 1=std, 2=peak
+     dailyProjectedCost: 8.45
+   )
+
+4. Oracle stores data on-chain
+5. Oracle emits OracleUpdated event
+6. Frontend polls Oracle, reads new data
 ```
 
 ---
 
 ## Technology Choices Explained
+
+### Why On-Chain Oracle Instead of WebSocket?
+1. **Decentralized**: Data lives on Hedera, not on a server
+2. **No Server Dependency**: Frontend never needs backend to be running
+3. **Verifiable**: All data visible on Hedera explorer
+4. **Scalable**: Multiple frontends can read same oracle
+5. **Self-Running**: Schedule contract reads from oracle directly
+6. **Better for Bounty**: Shows deep blockchain integration
 
 ### Why Hedera?
 1. **Schedule Service**: Handles recurring payments automatically - no backend cron needed

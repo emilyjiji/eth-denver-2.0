@@ -1,0 +1,17 @@
+{
+  "network": "adiTestnet",
+  "contractName": "UtilityReceivable",
+  "address": "0x31246c37f75cC7fe6f669651c66d27E6708De1b1",
+  "deployer": "0x03dfe6608e145240ef9C6f473BbAc58D6296c8A0",
+  "deployedAt": "2026-02-20T23:13:33.944Z",
+  "blockNumber": 40386,
+  "owner": "0x03dfe6608e145240ef9C6f473BbAc58D6296c8A0",
+  "relayer": "0x03dfe6608e145240ef9C6f473BbAc58D6296c8A0",
+  "adiPriceUSD": "3.1",
+  "chainId": "99999",
+  "state": {
+    "totalReceivables": "0",
+    "totalOutstanding": "0.0",
+    "totalPaid": "0.0"
+  }
+}

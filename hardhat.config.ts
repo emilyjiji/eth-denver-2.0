@@ -7,11 +7,22 @@ const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY ?? "0x00000000000000000000
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.19",
-    settings: {
-      optimizer: { enabled: true, runs: 200 },
-      viaIR: true,
-    },
+    compilers: [
+      {
+        version: "0.8.19",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true,
+        },
+      },
+      {
+        version: "0.8.24",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true,
+        },
+      },
+    ],
   },
   paths: {
     // All compilable contracts live in contracts/ to avoid Hardhat
@@ -25,6 +36,11 @@ const config: HardhatUserConfig = {
     hederaTestnet: {
       url:     "https://testnet.hashio.io/api",
       chainId: 296,
+      accounts: [DEPLOYER_KEY],
+    },
+    adiTestnet: {
+      url:     process.env.ADI_RPC || "https://rpc.ab.testnet.adifoundation.ai",
+      chainId: 99999,
       accounts: [DEPLOYER_KEY],
     },
   },

@@ -6,7 +6,10 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "clean": "hardhat clean",
-    "start:oracle": "ts-node oracle/run.ts"
+    "start:oracle": "ts-node oracle/run.ts",
+    "test:adi": "hardhat test test/UtilityReceivable.test.ts",
+    "relay": "ts-node relay/hederaToADI.ts",
+    "deploy:adi": "hardhat run scripts/deployADI.ts --network adiTestnet"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

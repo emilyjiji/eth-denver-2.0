@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   console.log('[Oracle] Contract :', deployment.epsAddr);
   console.log('[Oracle] Stream ID :', streamId);
   console.log('[Oracle] Network   : Hedera Testnet (hashio.io)');
-  console.log('[Oracle] Interval  : every 5 minutes');
+  console.log('[Oracle] Interval  : every 15 minutes');
   console.log('');
 
   const service = new OracleService(

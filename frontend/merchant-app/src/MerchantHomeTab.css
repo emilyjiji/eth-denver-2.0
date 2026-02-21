@@ -1,0 +1,148 @@
+.mh-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Section ── */
+.mh-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mh-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a2540;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* ── Today stat chips ── */
+.mh-today-stats {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.mh-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mh-chip-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mh-chip-label::after {
+  content: '▾';
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.mh-chip-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0a2540;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.mh-chip-value--dim {
+  color: #6b7280;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.mh-chip-sub {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ── Chart card ── */
+.mh-chart-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px 8px 12px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.mh-chart-empty {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* ── Tooltip ── */
+.mh-tooltip {
+  background: #0a2540;
+  border-radius: 7px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.mh-tooltip-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 2px;
+}
+
+.mh-tooltip-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mh-tooltip-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ── Overview grid ── */
+.mh-ov-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.mh-ov-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mh-ov-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  line-height: 1.3;
+}
+
+.mh-ov-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a2540;
+  letter-spacing: -0.3px;
+}
+
+.mh-ov-sub {
+  font-size: 11px;
+  color: #9ca3af;
+}

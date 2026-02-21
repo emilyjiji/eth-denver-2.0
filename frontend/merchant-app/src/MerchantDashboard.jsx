@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './MerchantDashboard.css';
 import CustomersTab from './CustomersTab';
 import ReceivablesTab from './ReceivablesTab';
+import MerchantHomeTab from './MerchantHomeTab';
 
 const NAV_ITEMS = [
   {
@@ -85,12 +86,7 @@ function MerchantDashboard({ accountData }) {
         <div className="db-main-inner">
 
           {active === 'home' && (
-            <div>
-              <h2 className="db-page-title">Home</h2>
-              <div className="db-card">
-                <p style={{ color: '#6b7280', fontSize: 14 }}>Merchant home coming soon.</p>
-              </div>
-            </div>
+            <MerchantHomeTab />
           )}
 
           {active === 'customers' && (

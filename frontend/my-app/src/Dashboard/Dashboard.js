@@ -90,7 +90,7 @@ function Dashboard({ accountData }) {
         <div className="db-sidebar-top">
           <div className="db-brand">
             <span className="db-brand-logo">⚡</span>
-            <span className="db-brand-name">Gimme</span>
+            <span className="db-brand-name">StreamPay</span>
           </div>
 
           <nav className="db-nav">

@@ -151,6 +151,9 @@ function ReceivablesTab() {
   const totalSettledUsd = tinybarToUsd(totalSettled, hbarPrice);
   const outstandingUsd  = tinybarToUsd(totalOutstanding, hbarPrice);
 
+  // Calculate total USD from ADI receivables
+  const adiOutstandingUSD = adiOutstanding.reduce((sum, r) => sum + r.amountUSD, 0);
+
   const days = groupByDay(charges);
 
   if (loading) return <div className="rv-loading">Loading receivables…</div>;
@@ -161,12 +164,12 @@ function ReceivablesTab() {
 
       {/* ── Summary cards ── */}
       <div className="rv-stats">
-        <SummaryCard label="Total billed"  value={fmtUsdc(totalChargedUsd)} sub={fmtHbar(totalCharged)} />
+        <SummaryCard label="Current billed"  value={fmtUsdc(totalChargedUsd)} sub={fmtHbar(totalCharged)} />
         <SummaryCard label="Settled"       value={fmtUsdc(totalSettledUsd)} sub={`${settlements.length} settlement${settlements.length !== 1 ? 's' : ''}`} accent />
         <SummaryCard
           label="Outstanding"
-          value={adiLoading ? '...' : <span className="rv-text-red">{adiOutstanding.length} receivable{adiOutstanding.length !== 1 ? 's' : ''}</span>}
-          sub={adiLoading ? '' : `${ethers.formatEther(totalOutstandingADI)} ADI`}
+          value={adiLoading ? '...' : <span className="rv-text-red">${adiOutstandingUSD.toFixed(5)}</span>}
+          sub={adiLoading ? '' : `${adiOutstanding.length} receivable${adiOutstanding.length !== 1 ? 's' : ''}`}
         />
         <SummaryCard label="Total usage"   value={(totalKwh / 1000).toFixed(2) + ' kWh'} sub="this period" />
       </div>
@@ -292,7 +295,7 @@ function ReceivablesTab() {
                     </td>
                     <td className="rv-td rv-td--right">
                       <div className="rv-amount-cell">
-                        <span className="rv-amount-usd rv-outstanding">${receivable.amountUSD.toFixed(2)}</span>
+                        <span className="rv-amount-usd rv-outstanding">${receivable.amountUSD.toFixed(5)}</span>
                         <span className="rv-amount-adi">{parseFloat(receivable.amountADI).toFixed(4)} ADI</span>
                       </div>
                     </td>

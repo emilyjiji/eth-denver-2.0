@@ -91,7 +91,7 @@ function CustomerCreateWallet({ onNext }) {
               onChange={(e) => setAccepted(e.target.checked)}
             />
             <span className="ccw-consent-text">
-              I authorize Gimme to automatically reload this wallet using the
+              I authorize StreamPay to automatically reload this wallet using the
               Hedera Schedule Service on my behalf.
             </span>
           </label>

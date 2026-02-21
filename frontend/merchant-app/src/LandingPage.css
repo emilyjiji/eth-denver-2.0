@@ -1,0 +1,191 @@
+.lp-root {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 24px 48px;
+  background: #f5f7fa;
+}
+
+/* ── Hero ─────────────────────────────────────── */
+.lp-hero {
+  text-align: center;
+  max-width: 640px;
+  margin-bottom: 56px;
+}
+
+.lp-badge {
+  display: inline-block;
+  background: #e8f0fe;
+  color: #1a56db;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.lp-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #0a2540;
+  line-height: 1.2;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+.lp-sub {
+  font-size: 17px;
+  color: #425466;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Cards ────────────────────────────────────── */
+.lp-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  max-width: 860px;
+}
+
+@media (max-width: 640px) {
+  .lp-cards { grid-template-columns: 1fr; }
+  .lp-title { font-size: 28px; }
+}
+
+.lp-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1.5px solid #e3e8ef;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.lp-card:hover {
+  box-shadow: 0 12px 40px rgba(10, 37, 64, 0.10);
+  transform: translateY(-2px);
+}
+
+.lp-card--provider {
+  background: #0a2540;
+  border-color: #0a2540;
+}
+
+.lp-card-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.lp-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a8fa6;
+}
+
+.lp-card--provider .lp-card-label {
+  color: #5b8fa8;
+}
+
+.lp-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0a2540;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.lp-card--provider .lp-card-title {
+  color: #fff;
+}
+
+.lp-card-desc {
+  font-size: 14px;
+  color: #425466;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.lp-card--provider .lp-card-desc {
+  color: #93afc4;
+}
+
+.lp-card-features {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.lp-card-features li {
+  font-size: 13px;
+  color: #425466;
+  padding-left: 18px;
+  position: relative;
+}
+
+.lp-card-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #1a56db;
+  font-weight: 700;
+}
+
+.lp-card--provider .lp-card-features li {
+  color: #93afc4;
+}
+
+.lp-card--provider .lp-card-features li::before {
+  color: #4da6ff;
+}
+
+/* ── Buttons ──────────────────────────────────── */
+.lp-btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  margin-top: 8px;
+}
+
+.lp-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.lp-btn--outline {
+  background: #fff;
+  color: #0a2540;
+  border: 1.5px solid #c9d4e0;
+}
+
+.lp-btn--primary {
+  background: #635bff;
+  color: #fff;
+}
+
+/* ── Footer note ──────────────────────────────── */
+.lp-footer-note {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #9aafbf;
+  text-align: center;
+}

@@ -41,7 +41,7 @@ export class UsageSimulator {
    * @param overrideHour  Optional UTC hour override for testing.
    */
   generateHourlyUsage(overrideHour?: number): UsageSample {
-    const hour   = overrideHour ?? new Date().getUTCHours();
+    const hour   = overrideHour ?? new Date().getHours();
     const config = this.getHourConfig(hour);
 
     // Base: 500–1500 (kWh × 1000)

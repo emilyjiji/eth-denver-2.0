@@ -38,9 +38,9 @@ export class PricingEngine {
   // Variation comes from both usage range AND congestion multiplier (1.0–2.5×),
   // giving roughly $0.02–$0.09 per report.
   private static readonly RATES = {
-    OFF_PEAK:  20_000n, // overnight/low-use  ≈ $0.01–0.02/period
-    STANDARD:  50_000n, // daytime            ≈ $0.04–0.06/period
-    PEAK:      85_000n, // evening            ≈ $0.06–0.10/period
+    OFF_PEAK: 20_000n, // overnight/low-use  ≈ $0.01–0.02/period
+    STANDARD: 50_000n, // daytime            ≈ $0.04–0.06/period
+    PEAK:     85_000n, // evening            ≈ $0.06–0.10/period
   } as const;
 
   /**

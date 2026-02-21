@@ -108,6 +108,12 @@
   color: #0A2540;
 }
 
+.it-chart-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
 .it-legend {
   display: flex;
   gap: 14px;

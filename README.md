@@ -13,7 +13,7 @@ Cross-chain utility payment infrastructure demonstrating:
 3. **Cross-chain relay**: Listens to Hedera settlement events, mints corresponding receivables on ADI
 4. **Dual frontends**: Customer dashboard (React) + Merchant dashboard (Vite)
 
-**Live Demo**: 1 OUTSTANDING receivable NFT successfully minted cross-chain
+1 OUTSTANDING receivable NFT successfully minted cross-chain
 
 ---
 
@@ -153,33 +153,6 @@ test/
 oracle/
   run.ts                           # Usage/pricing data simulator
 ```
-
----
-
-## Bounties Targeted
-
-**Hedera Schedule Service ($5,000)**:
-- Self-perpetuating payment streams using HSS (IHRC-1215)
-- `settle()` automatically re-schedules itself each execution
-- Dynamic congestion-based pricing with PRNG capacity probing
-- 27 passing tests covering schedule lifecycle
-
-**ADI RWA/DePIN ($10,000-$19,000)**:
-- Utility receivables tokenized as NFTs on ADI Chain
-- Native $ADI payments with hardcoded $3.10 price
-- Custom ERC721-like implementation (no OpenZeppelin)
-- Cross-chain minting from Hedera settlement events
-- 61 passing tests with full status lifecycle (OUTSTANDING → FACTORED → PAID)
-
----
-
-## How to Demo
-
-1. **View deployed contracts** on block explorers (links above)
-2. **Run tests**: `npm test` shows 161 passing
-3. **Start relay**: `npm run relay` - monitors Hedera, mints on ADI
-4. **Customer UI**: Shows stream balance, usage, deposit flow
-5. **Merchant UI**: Manages receivables, customers, factoring
 
 ---
 

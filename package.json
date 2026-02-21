@@ -9,7 +9,9 @@
     "start:oracle": "ts-node oracle/run.ts",
     "test:adi": "hardhat test test/UtilityReceivable.test.ts",
     "relay": "ts-node relay/hederaToADI.ts",
-    "deploy:adi": "hardhat run scripts/deployADI.ts --network adiTestnet"
+    "deploy:adi": "hardhat run scripts/deployADI.ts --network adiTestnet",
+    "settle": "hardhat run scripts/manualSettle.ts --network hederaTestnet",
+    "settle:success": "hardhat run scripts/topUpAndSettle.ts --network hederaTestnet"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

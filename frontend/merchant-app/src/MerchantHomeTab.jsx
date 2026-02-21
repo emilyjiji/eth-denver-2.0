@@ -19,25 +19,26 @@ function fmtHour(ts) {
   return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
 }
 
-/* Build hourly buckets for the area chart */
-function buildChartData(charges, hbarPrice, dayStart) {
-  // Bucket by hour (0–23)
+/* Build hourly buckets for the last 5 hours */
+function buildChartData(charges, hbarPrice) {
+  const now = Date.now();
+  const windowStart = now - 5 * 60 * 60 * 1000;
   const buckets = {};
   for (const c of charges) {
-    if (c.timestamp < dayStart) continue;
+    if (c.timestamp < windowStart) continue;
     const hour = new Date(c.timestamp).getHours();
     buckets[hour] = (buckets[hour] || 0) + (tinybarToUsd(Number(c.cost), hbarPrice) ?? 0);
   }
-  // Fill all hours up to now
-  const nowHour = new Date().getHours();
   const points = [];
   let cumulative = 0;
-  for (let h = 0; h <= nowHour; h++) {
-    cumulative += buckets[h] || 0;
+  for (let i = 4; i >= 0; i--) {
+    const ts = new Date(now - i * 60 * 60 * 1000);
+    const hour = ts.getHours();
+    cumulative += buckets[hour] || 0;
     points.push({
-      label: fmtHour(new Date().setHours(h, 0, 0, 0)),
+      label: fmtHour(ts),
       volume: parseFloat(cumulative.toFixed(4)),
-      hourly: parseFloat((buckets[h] || 0).toFixed(4)),
+      hourly: parseFloat((buckets[hour] || 0).toFixed(4)),
     });
   }
   return points;
@@ -99,7 +100,7 @@ export default function MerchantHomeTab() {
   const allSettled = settlements.reduce((s, e) => s + Number(e.amountPaid), 0);
   const allKwh     = charges.reduce((s, c) => s + c.usageDelta, 0);
 
-  const chartData = buildChartData(charges, hbarPrice, todayStart);
+  const chartData = buildChartData(charges, hbarPrice);
 
   return (
     <div className="mh-wrap">
@@ -135,7 +136,7 @@ export default function MerchantHomeTab() {
         <div className="mh-chart-card">
           {loading || chartData.length === 0 ? (
             <div className="mh-chart-empty">
-              {loading ? 'Loading chart…' : 'No data yet today.'}
+              {loading ? 'Loading chart…' : 'No data in the last 5 hours.'}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>

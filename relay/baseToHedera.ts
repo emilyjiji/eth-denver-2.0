@@ -52,12 +52,18 @@ function rlog(msg: string) {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 async function getHbarPriceUsd(): Promise<number> {
-  const url =
-    "https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd";
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("CoinGecko fetch failed");
-  const data = (await res.json()) as Record<string, { usd: number }>;
-  return data["hedera-hashgraph"].usd;
+  const fallback = parseFloat(process.env.HBAR_USD_PRICE || "0.05");
+  try {
+    const url =
+      "https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("CoinGecko fetch failed");
+    const data = (await res.json()) as Record<string, { usd: number }>;
+    return data["hedera-hashgraph"].usd;
+  } catch (e) {
+    rlog(`CoinGecko unavailable, using fallback price $${fallback}`);
+    return fallback;
+  }
 }
 
 /** Convert raw USDC units (6 decimals) to HBAR using live price. */

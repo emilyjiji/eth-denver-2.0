@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
+import * as path from "path";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../frontend/my-app/.env.local") });
 
 /**
  * Cross-chain relay: Hedera ElectricityPaymentStream -> ADI UtilityReceivable
@@ -19,7 +20,7 @@ dotenv.config();
 
 const HEDERA_RPC = process.env.HEDERA_RPC || "https://testnet.hashio.io/api";
 const ADI_RPC = process.env.ADI_RPC || "https://rpc.ab.testnet.adifoundation.ai";
-const PRIVATE_KEY = process.env.RELAY_PRIVATE_KEY || process.env.DEPLOYER_PRIVATE_KEY;
+const PRIVATE_KEY = process.env.ADI_RELAY_PRIVATE_KEY || process.env.DEPLOYER_PRIVATE_KEY;
 
 const HEDERA_STREAM_ADDRESS = process.env.HEDERA_STREAM_ADDRESS!;
 const ADI_RECEIVABLE_ADDRESS = process.env.ADI_CERTIFICATE_ADDRESS!;

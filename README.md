@@ -1,4 +1,4 @@
-# eth-denver-2.0
+# gimme.money
 Emily, Simran & Hannah — ETH Denver 2025
 
 Cross-chain electricity payment streams: swap ETH → USDC on Base via Uniswap, relay converts to HBAR, and funds a self-scheduling Hedera payment stream using the Hedera Schedule Service (HSS).

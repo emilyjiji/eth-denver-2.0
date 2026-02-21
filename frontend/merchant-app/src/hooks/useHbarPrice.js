@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 
 export function useHbarPrice() {
-  const [priceUsd, setPriceUsd] = useState(null);
+  // Default to $0.10 immediately, update from API after
+  const [priceUsd, setPriceUsd] = useState(0.10);
 
   useEffect(() => {
     async function fetch() {
       try {
         const res  = await window.fetch('https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd');
         const data = await res.json();
-        setPriceUsd(data['hedera-hashgraph']?.usd ?? null);
+        const apiPrice = data['hedera-hashgraph']?.usd;
+        if (apiPrice) setPriceUsd(apiPrice);
       } catch { /* keep previous price */ }
     }
     fetch();

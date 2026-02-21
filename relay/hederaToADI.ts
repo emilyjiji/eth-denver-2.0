@@ -226,6 +226,12 @@ class HederaToADIRelay {
                 console.log(`  Utility: ${utility}`);
                 console.log(`  Amount: ${amountHBAR.toFixed(4)} HBAR = $${amountUSD.toFixed(2)} USD`);
 
+                // Skip if amount too small (rounds to $0.00 in 6 decimals)
+                if (amountUSD6Decimals === 0) {
+                    console.log(`  ⚠️  Amount too small (< $0.000001), skipping\n`);
+                    continue;
+                }
+
                 // Create proof hash
                 const hederaTxHash = ethers.keccak256(ethers.toUtf8Bytes(event.transactionHash));
 
@@ -292,6 +298,12 @@ class HederaToADIRelay {
                 console.log(`  Customer: ${customer}`);
                 console.log(`  Utility: ${utility}`);
                 console.log(`  Needed: ${neededHBAR.toFixed(4)} HBAR = $${amountUSD.toFixed(2)} USD`);
+
+                // Skip if amount too small (rounds to $0.00 in 6 decimals)
+                if (amountUSD6Decimals === 0) {
+                    console.log(`  ⚠️  Amount too small (< $0.000001), skipping\n`);
+                    continue;
+                }
 
                 const hederaTxHash = ethers.keccak256(ethers.toUtf8Bytes(event.transactionHash));
 

@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { ethers } from 'ethers';
 import './ReceivablesTab.css';
 import { useReceivables } from './hooks/useReceivables';
+import { useADIReceivables } from './hooks/useADIReceivables';
 import { useHbarPrice, tinybarToUsd } from './hooks/useHbarPrice';
 
 const HASHSCAN = 'https://hashscan.io/testnet/transaction/';
+const ADI_EXPLORER = 'https://explorer.ab.testnet.adifoundation.ai';
 
 function fmtTime(ts) {
   return new Date(ts).toLocaleTimeString('en-US', {
@@ -136,6 +139,7 @@ function ChargeDayGroup({ dateKey, charges, hbarPrice, defaultOpen }) {
 
 function ReceivablesTab() {
   const { charges, settlements, loading, error } = useReceivables();
+  const { outstanding: adiOutstanding, totalOutstandingADI, loading: adiLoading, error: adiError } = useADIReceivables();
   const hbarPrice = useHbarPrice();
 
   const totalCharged     = charges.reduce((s, c) => s + Number(c.cost), 0);
@@ -159,7 +163,11 @@ function ReceivablesTab() {
       <div className="rv-stats">
         <SummaryCard label="Total billed"  value={fmtUsdc(totalChargedUsd)} sub={fmtHbar(totalCharged)} />
         <SummaryCard label="Settled"       value={fmtUsdc(totalSettledUsd)} sub={`${settlements.length} settlement${settlements.length !== 1 ? 's' : ''}`} accent />
-        <SummaryCard label="Outstanding"   value={fmtUsdc(outstandingUsd)}  sub={`${charges.length} charge${charges.length !== 1 ? 's' : ''}`} />
+        <SummaryCard
+          label="Outstanding"
+          value={adiLoading ? '...' : <span className="rv-text-red">{adiOutstanding.length} receivable{adiOutstanding.length !== 1 ? 's' : ''}</span>}
+          sub={adiLoading ? '' : `${ethers.formatEther(totalOutstandingADI)} ADI`}
+        />
         <SummaryCard label="Total usage"   value={(totalKwh / 1000).toFixed(2) + ' kWh'} sub="this period" />
       </div>
 
@@ -238,6 +246,84 @@ function ReceivablesTab() {
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* ── Outstanding Receivables (ADI RWA) ── */}
+      <div className="rv-section">
+        <h3 className="rv-section-title">Outstanding Receivables</h3>
+        <div className="rv-table-wrap">
+          {adiLoading ? (
+            <div className="rv-empty">Loading ADI receivables...</div>
+          ) : adiError ? (
+            <div className="rv-error">Error loading ADI receivables: {adiError}</div>
+          ) : adiOutstanding.length === 0 ? (
+            <div className="rv-empty">No outstanding receivables on ADI Chain.</div>
+          ) : (
+            <table className="rv-table">
+              <thead>
+                <tr>
+                  <th className="rv-th">Customer</th>
+                  <th className="rv-th">Token ID</th>
+                  <th className="rv-th rv-th--right">Amount</th>
+                  <th className="rv-th">Due Date</th>
+                  <th className="rv-th">Minted</th>
+                  <th className="rv-th">Hedera Proof</th>
+                  <th className="rv-th">ADI TX</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adiOutstanding.map((receivable) => (
+                  <tr key={receivable.tokenId} className="rv-row">
+                    <td className="rv-td">
+                      <div className="rv-customer-cell">
+                        <Avatar name={`Customer ${receivable.tokenId}`} />
+                        <div className="rv-customer-info">
+                          <span className="rv-customer-name">Customer {receivable.tokenId}</span>
+                          <span className="rv-customer-email">{receivable.customer.slice(0, 8)}...{receivable.customer.slice(-6)}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="rv-td">
+                      <span className="rv-token-id">#{receivable.tokenId}</span>
+                    </td>
+                    <td className="rv-td rv-td--right">
+                      <div className="rv-amount-cell">
+                        <span className="rv-amount-usd rv-outstanding">${receivable.amountUSD.toFixed(2)}</span>
+                        <span className="rv-amount-adi">{parseFloat(receivable.amountADI).toFixed(4)} ADI</span>
+                      </div>
+                    </td>
+                    <td className="rv-td">
+                      {receivable.dueDate.toLocaleDateString()}
+                    </td>
+                    <td className="rv-td rv-muted">
+                      {receivable.mintedAt.toLocaleDateString()}
+                    </td>
+                    <td className="rv-td">
+                      <a
+                        href={`https://hashscan.io/testnet/transaction/${receivable.hederaTxHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rv-link"
+                      >
+                        {receivable.hederaTxHash.slice(0, 8)}…{receivable.hederaTxHash.slice(-6)}
+                      </a>
+                    </td>
+                    <td className="rv-td">
+                      <a
+                        href={`${ADI_EXPLORER}/address/0x31246c37f75cC7fe6f669651c66d27E6708De1b1`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rv-link"
+                      >
+                        View NFT↗
+                      </a>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}

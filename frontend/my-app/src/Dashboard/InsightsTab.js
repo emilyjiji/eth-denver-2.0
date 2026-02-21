@@ -77,10 +77,11 @@ const HOUR_LABELS = Array.from({ length: 24 }, (_, h) => {
 });
 
 // Base rates from PricingEngine (no congestion) in HBAR/kWh
+// Formula: rate_tinybar/unit × 1000 units/kWh / 1e8 tinybar/HBAR
 const TIER_BASE_HBAR = {
-  'Off-Peak': 20000 * 1000 / 1e8,  // 0.20
-  'Standard': 50000 * 1000 / 1e8,  // 0.50
-  'Peak':     85000 * 1000 / 1e8,  // 0.85
+  'Off-Peak': 50000 * 1000 / 1e8,  // 0.50 HBAR/kWh  ≈ 5¢/kWh
+  'Standard': 65000 * 1000 / 1e8,  // 0.65 HBAR/kWh  ≈ 6.5¢/kWh
+  'Peak':     80000 * 1000 / 1e8,  // 0.80 HBAR/kWh  ≈ 8¢/kWh
 };
 
 function buildPriceChart(events) {
@@ -368,7 +369,7 @@ function InsightsTab({ events = [], loading = false, hbarPriceUsd = null }) {
             <ReferenceArea x1={0}  x2={5}  fill={TIERS['Off-Peak'].color} fillOpacity={0.07} label={false} />
             <ReferenceArea x1={6}  x2={16} fill={TIERS['Standard'].color} fillOpacity={0.07} label={false} />
             <ReferenceArea x1={17} x2={21} fill={TIERS['Peak'].color}     fillOpacity={0.07} label={false} />
-            <ReferenceArea x1={22} x2={23} fill={TIERS['Standard'].color} fillOpacity={0.07} label={false} />
+            <ReferenceArea x1={22} x2={23} fill={TIERS['Off-Peak'].color} fillOpacity={0.07} label={false} />
 
             <XAxis
               dataKey="hour"

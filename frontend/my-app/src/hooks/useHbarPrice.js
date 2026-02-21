@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 
+// Fallback price used before CoinGecko responds or if the fetch fails.
+const HBAR_FALLBACK_USD = 0.10;
+
 // Fetches live HBAR/USD price from CoinGecko (free, no API key required).
-// Refreshes every 60 seconds. Returns null until the first fetch resolves.
+// Refreshes every 60 seconds. Returns fallback price until the first fetch resolves.
 export function useHbarPrice() {
-  const [priceUsd, setPriceUsd] = useState(null);
+  const [priceUsd, setPriceUsd] = useState(HBAR_FALLBACK_USD);
 
   useEffect(() => {
     async function fetchPrice() {
@@ -12,9 +15,10 @@ export function useHbarPrice() {
           'https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd'
         );
         const data = await res.json();
-        setPriceUsd(data['hedera-hashgraph']?.usd ?? null);
+        const live = data['hedera-hashgraph']?.usd;
+        if (live != null) setPriceUsd(live);
       } catch {
-        // silently ignore — stale price stays displayed
+        // silently ignore — fallback/stale price stays displayed
       }
     }
     fetchPrice();

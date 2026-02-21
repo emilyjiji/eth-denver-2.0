@@ -1,0 +1,197 @@
+.rv-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Summary stats ── */
+.rv-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.rv-stat {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.rv-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rv-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0a2540;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.rv-stat-sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ── Section ── */
+.rv-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rv-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+/* ── Table ── */
+.rv-table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.rv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rv-th {
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-align: left;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.rv-th--right { text-align: right; }
+
+.rv-row { transition: background 0.1s; }
+.rv-row:hover { background: #f9fafb; }
+.rv-row:not(:last-child) .rv-td { border-bottom: 1px solid #f3f4f6; }
+
+.rv-td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: #111827;
+  vertical-align: middle;
+}
+
+.rv-td--right { text-align: right; }
+
+/* Customer cell */
+.rv-customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rv-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rv-customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rv-customer-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.rv-customer-email {
+  font-size: 11.5px;
+  color: #9ca3af;
+}
+
+/* Amount cell */
+.rv-amount-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.rv-amount-usd {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.rv-amount-usd.rv-paid {
+  color: #059669;
+}
+
+.rv-amount-hbar {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.rv-muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.rv-mono {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Hash link */
+.rv-link {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.rv-link:hover { text-decoration: underline; }
+
+.rv-no-hash { color: #d1d5db; }
+
+/* States */
+.rv-loading,
+.rv-error,
+.rv-empty {
+  padding: 48px;
+  text-align: center;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.rv-error { color: #ef4444; }

@@ -1,0 +1,236 @@
+.ct-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Toolbar ── */
+.ct-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.ct-search-wrap {
+  position: relative;
+  flex: 0 0 260px;
+}
+
+.ct-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ct-search {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px 0 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ct-search::placeholder {
+  color: #9ca3af;
+}
+
+.ct-search:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.ct-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.ct-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.ct-filter-pill:hover {
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.ct-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ct-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ct-action-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* ── Table ── */
+.ct-table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.ct-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ct-th {
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-align: left;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ct-th--right {
+  text-align: right;
+}
+
+.ct-row {
+  transition: background 0.1s;
+}
+
+.ct-row:hover {
+  background: #f9fafb;
+}
+
+.ct-row:not(:last-child) .ct-td {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.ct-td {
+  padding: 13px 16px;
+  font-size: 13.5px;
+  color: #111827;
+  vertical-align: middle;
+}
+
+.ct-td--right {
+  text-align: right;
+}
+
+/* Name cell */
+.ct-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ct-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.ct-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.ct-email {
+  color: #6366f1;
+  font-size: 13px;
+}
+
+.ct-muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.ct-balance {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Status badge ── */
+.ct-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ct-badge--active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.ct-badge--active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.ct-badge--paused {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ── Empty ── */
+.ct-empty {
+  padding: 48px;
+  text-align: center;
+  font-size: 14px;
+  color: #9ca3af;
+}

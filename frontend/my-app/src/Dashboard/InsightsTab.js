@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Cell, ReferenceArea,
+  Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 import './InsightsTab.css';
 import { formatUsdc } from '../hooks/useHbarPrice';
@@ -67,101 +67,6 @@ function buildSlots(events) {
   return slots;
 }
 
-// ── Price chart helpers ────────────────────────────────────────────────────────
-
-const HOUR_LABELS = Array.from({ length: 24 }, (_, h) => {
-  if (h === 0)  return '12am';
-  if (h === 12) return '12pm';
-  if (h < 12)   return `${h}am`;
-  return `${h - 12}pm`;
-});
-
-// Base rates from PricingEngine (no congestion) in HBAR/kWh
-// Formula: rate_tinybar/unit × 1000 units/kWh / 1e8 tinybar/HBAR
-const TIER_BASE_HBAR = {
-  'Off-Peak': 50000 * 1000 / 1e8,  // 0.50 HBAR/kWh  ≈ 5¢/kWh
-  'Standard': 65000 * 1000 / 1e8,  // 0.65 HBAR/kWh  ≈ 6.5¢/kWh
-  'Peak':     80000 * 1000 / 1e8,  // 0.80 HBAR/kWh  ≈ 8¢/kWh
-};
-
-function buildPriceChart(events) {
-  const now         = new Date();
-  const currentHour = now.getHours();
-  const midnight    = new Date(now);
-  midnight.setHours(0, 0, 0, 0);
-  const midnightMs  = midnight.getTime();
-
-  return Array.from({ length: 24 }, (_, h) => {
-    const hourStartMs = midnightMs + h * 3_600_000;
-    const hourEndMs   = hourStartMs + 3_600_000;
-    const period      = classifyHour(h);
-    const isFuture    = h > currentHour;
-
-    const hourEvents = events.filter(
-      e => e.timestamp >= hourStartMs && e.timestamp < hourEndMs
-    );
-
-    // Average effective rate across all reports in this hour (HBAR/kWh)
-    const actualRate = hourEvents.length > 0
-      ? hourEvents.reduce((s, e) => s + Number(e.effectiveRate) * 1000 / 1e8, 0) / hourEvents.length
-      : null;
-
-    return {
-      hour: h,
-      label: HOUR_LABELS[h],
-      actualRate,
-      baseRate: TIER_BASE_HBAR[period],
-      period,
-      isFuture,
-      hasData: hourEvents.length > 0,
-    };
-  });
-}
-
-function PriceTooltip({ active, payload, hbarPriceUsd }) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0]?.payload;
-  if (!d) return null;
-
-  const fmt = (hbar) => {
-    if (hbar == null) return '—';
-    if (hbarPriceUsd != null)
-      return (hbar * hbarPriceUsd * 100).toFixed(2) + '¢/kWh';
-    return hbar.toFixed(3) + ' HBAR/kWh';
-  };
-
-  const congestionPct = d.hasData && d.baseRate
-    ? Math.round((d.actualRate / d.baseRate - 1) * 100)
-    : null;
-
-  return (
-    <div className="it-tooltip">
-      <p className="it-tooltip-time">{d.label}</p>
-      <p className="it-tooltip-period" style={{ color: TIERS[d.period]?.color }}>
-        {d.period}{d.isFuture ? ' · upcoming' : ''}
-      </p>
-      <p className="it-tooltip-row">
-        <span className="it-tooltip-key">Base rate</span>
-        <span className="it-tooltip-val">{fmt(d.baseRate)}</span>
-      </p>
-      {d.hasData && (
-        <>
-          <p className="it-tooltip-row">
-            <span className="it-tooltip-key">Actual rate</span>
-            <span className="it-tooltip-val">{fmt(d.actualRate)}</span>
-          </p>
-          {congestionPct !== null && congestionPct > 0 && (
-            <p className="it-tooltip-row">
-              <span className="it-tooltip-key">Congestion</span>
-              <span className="it-tooltip-val">+{congestionPct}%</span>
-            </p>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 function CustomTooltip({ active, payload, hbarPriceUsd }) {
   if (!active || !payload?.length) return null;
@@ -199,8 +104,7 @@ function CustomTooltip({ active, payload, hbarPriceUsd }) {
 // ── Main component ────────────────────────────────────────────────────────────
 function InsightsTab({ events = [], loading = false, hbarPriceUsd = null }) {
 
-  const slots      = useMemo(() => buildSlots(events),      [events]);
-  const priceSlots = useMemo(() => buildPriceChart(events), [events]);
+  const slots = useMemo(() => buildSlots(events), [events]);
 
   // Stats from real events only
   const totalKwh      = events.reduce((s, e) => s + e.usageDelta / 1000, 0).toFixed(3);
@@ -342,105 +246,30 @@ function InsightsTab({ events = [], loading = false, hbarPriceUsd = null }) {
         )}
       </div>
 
-      {/* ── Pricing chart ── */}
-      <div className="it-chart-card">
-        <div className="it-chart-header">
-          <span className="it-chart-title">
-            Electricity rate · today&nbsp;
-            <span className="it-chart-unit">
-              ({hbarPriceUsd != null ? '¢ / kWh' : 'HBAR / kWh'})
-            </span>
-          </span>
-          <div className="it-legend">
-            {Object.entries(TIERS).map(([name, { color }]) => (
-              <span key={name} className="it-legend-item">
-                <span className="it-legend-dot" style={{ background: color }} />
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <ResponsiveContainer width="100%" height={220}>
-          <ComposedChart data={priceSlots} margin={{ top: 8, right: 24, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-
-            {/* Time-period background bands */}
-            <ReferenceArea x1={0}  x2={5}  fill={TIERS['Off-Peak'].color} fillOpacity={0.07} label={false} />
-            <ReferenceArea x1={6}  x2={16} fill={TIERS['Standard'].color} fillOpacity={0.07} label={false} />
-            <ReferenceArea x1={17} x2={21} fill={TIERS['Peak'].color}     fillOpacity={0.07} label={false} />
-            <ReferenceArea x1={22} x2={23} fill={TIERS['Off-Peak'].color} fillOpacity={0.07} label={false} />
-
-            <XAxis
-              dataKey="hour"
-              tickFormatter={h => HOUR_LABELS[h]}
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
-              tickLine={false}
-              axisLine={false}
-              interval={2}
-            />
-            <YAxis
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={v =>
-                hbarPriceUsd != null
-                  ? (v * hbarPriceUsd * 100).toFixed(1) + '¢'
-                  : v.toFixed(2)
-              }
-              width={44}
-            />
-            <Tooltip content={props => <PriceTooltip {...props} hbarPriceUsd={hbarPriceUsd} />} />
-
-            {/* Expected base rate (dashed reference) */}
-            <Line
-              type="stepAfter"
-              dataKey="baseRate"
-              stroke="#cbd5e1"
-              strokeWidth={1.5}
-              strokeDasharray="4 3"
-              dot={false}
-              activeDot={false}
-              name="Base rate"
-            />
-
-            {/* Actual on-chain rate */}
-            <Line
-              type="monotone"
-              dataKey="actualRate"
-              stroke="#0A2540"
-              strokeWidth={2.5}
-              connectNulls={false}
-              dot={props => {
-                if (props.payload?.actualRate == null) return null;
-                return (
-                  <circle
-                    key={props.key}
-                    cx={props.cx} cy={props.cy} r={5}
-                    fill={TIERS[props.payload.period]?.color ?? '#0A2540'}
-                    stroke="#fff"
-                    strokeWidth={1.5}
-                  />
-                );
-              }}
-              activeDot={{ r: 7 }}
-              name="Actual rate"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
       {/* ── Recent reports list ── */}
       {events.length > 0 && (
         <div className="it-reports-card">
           <p className="it-reports-title">Recent reports</p>
+          <div className="it-report-row it-report-header">
+            <span className="it-report-dot" style={{ visibility: 'hidden' }} />
+            <span className="it-report-time">Time</span>
+            <span className="it-report-period">Tier</span>
+            <span className="it-report-kwh">Usage</span>
+            <span className="it-report-rate">Rate</span>
+            <span className="it-report-cost">Cost</span>
+            <span className="it-report-hash">Tx</span>
+          </div>
           {[...events].reverse().slice(0, 8).map((ev, i) => {
             const h        = new Date(ev.timestamp).getHours();
             const per      = classifyHour(h);
             const kwh      = (ev.usageDelta / 1000).toFixed(3);
-            const costHbar = Number(ev.cost) / 1e8;
-            const costUsdc = hbarPriceUsd != null ? costHbar * hbarPriceUsd : null;
-            const cost     = costUsdc != null ? formatUsdc(costUsdc) + ' USDC' : costHbar.toFixed(6) + ' HBAR';
+            const costHbar    = Number(ev.cost) / 1e8;
+            const costUsdc    = hbarPriceUsd != null ? costHbar * hbarPriceUsd : null;
+            const cost        = costUsdc != null ? formatUsdc(costUsdc) + ' USDC' : costHbar.toFixed(6) + ' HBAR';
+            const rateHbarKwh = Number(ev.effectiveRate) * 1000 / 1e8;
+            const rateDisplay = hbarPriceUsd != null
+              ? '$' + (rateHbarKwh * hbarPriceUsd).toFixed(4) + '/kWh'
+              : rateHbarKwh.toFixed(4) + ' HBAR/kWh';
             return (
               <div key={i} className="it-report-row">
                 <span className="it-report-dot" style={{ background: TIERS[per].color }} />
@@ -449,6 +278,7 @@ function InsightsTab({ events = [], loading = false, hbarPriceUsd = null }) {
                 </span>
                 <span className="it-report-period" style={{ color: TIERS[per].color }}>{per}</span>
                 <span className="it-report-kwh">{kwh} kWh</span>
+                <span className="it-report-rate">{rateDisplay}</span>
                 <span className="it-report-cost">{cost}</span>
                 {ev.txHash && (
                   <a

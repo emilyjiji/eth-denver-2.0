@@ -233,6 +233,18 @@
 
 .it-report-row:last-child { border-bottom: none; }
 
+.it-report-header {
+  border-bottom: 1px solid #e5e7eb !important;
+  margin-bottom: 2px;
+}
+.it-report-header span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+}
+
 .it-report-dot {
   width: 7px;
   height: 7px;
@@ -243,6 +255,7 @@
 .it-report-time   { color: #374151; font-weight: 500; min-width: 60px; }
 .it-report-period { font-weight: 600; font-size: 11px; min-width: 64px; text-transform: uppercase; letter-spacing: 0.4px; }
 .it-report-kwh    { color: #374151; min-width: 70px; }
+.it-report-rate   { color: #374151; min-width: 100px; }
 .it-report-cost   { color: #6b7280; flex: 1; }
 
 .it-report-hash {

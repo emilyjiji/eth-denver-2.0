@@ -121,11 +121,37 @@ export function useUniswapSwap() {
       const provider = new ethers.BrowserProvider(window.ethereum);
       await provider.waitForTransaction(wrapTxHash);
 
-      // Step 2: Sign Permit2 for WETH
+      // Re-fetch a fresh quote now that wrap is confirmed (original quote deadline may have expired)
+      onStep?.('Refreshing quote…');
+      const amountEth = ethers.formatEther(ethAmountWei);
+      const freshQuoteRes = await fetch(`${UNISWAP_API}/quote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.REACT_APP_UNISWAP_API_KEY || '',
+        },
+        body: JSON.stringify({
+          type: 'EXACT_INPUT',
+          amount: ethAmountWei,
+          tokenInChainId: CHAIN_ID,
+          tokenOutChainId: CHAIN_ID,
+          tokenIn: WETH_ADDRESS,
+          tokenOut: USDC_ADDRESS,
+          swapper,
+          slippageTolerance: 1.0,
+        }),
+      });
+      if (!freshQuoteRes.ok) {
+        const err = await freshQuoteRes.json().catch(() => ({}));
+        throw new Error(err.detail || `Fresh quote failed (${freshQuoteRes.status})`);
+      }
+      const freshQuote = await freshQuoteRes.json();
+
+      // Step 2: Sign Permit2 for WETH using fresh quote
       onStep?.('Sign Permit2 approval…');
       let signature;
-      if (quoteData.permitData) {
-        const { domain, types, values } = quoteData.permitData;
+      if (freshQuote.permitData) {
+        const { domain, types, values } = freshQuote.permitData;
         const { EIP712Domain: _unused, ...signTypes } = types;
         signature = await window.ethereum.request({
           method: 'eth_signTypedData_v4',
@@ -133,7 +159,7 @@ export function useUniswapSwap() {
         });
       }
 
-      // Step 3: Get swap calldata and execute
+      // Step 3: Get swap calldata and execute using fresh quote
       onStep?.('Confirm swap in MetaMask…');
       const res = await fetch(`${UNISWAP_API}/swap`, {
         method: 'POST',
@@ -142,8 +168,8 @@ export function useUniswapSwap() {
           'x-api-key': process.env.REACT_APP_UNISWAP_API_KEY || '',
         },
         body: JSON.stringify({
-          quote: quoteData.quote,
-          ...(signature && { signature, permitData: quoteData.permitData }),
+          quote: freshQuote.quote,
+          ...(signature && { signature, permitData: freshQuote.permitData }),
         }),
       });
       if (!res.ok) {
@@ -170,7 +196,8 @@ export function useUniswapSwap() {
         throw new Error('Swap transaction reverted on-chain');
       }
 
-      return { txHash, explorerUrl: `${EXPLORER_BASE}/tx/${txHash}` };
+      const usdcOut = freshQuote?.quote?.output?.amount || quoteData?.quote?.output?.amount || '0';
+      return { txHash, explorerUrl: `${EXPLORER_BASE}/tx/${txHash}`, usdcOut };
     } catch (e) {
       setError(e.message);
       return null;

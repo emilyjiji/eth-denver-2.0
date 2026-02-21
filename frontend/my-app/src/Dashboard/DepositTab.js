@@ -88,7 +88,7 @@ export default function DepositTab() {
 
     // Notify relay to top up the Hedera stream with equivalent HBAR
     try {
-      const usdcOut = quote?.quote?.output?.amount || '0';
+      const usdcOut = tx.usdcOut || quote?.quote?.output?.amount || '0';
       const res = await fetch(`${RELAY_URL}/fund-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

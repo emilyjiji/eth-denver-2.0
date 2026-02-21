@@ -129,7 +129,6 @@ function Dashboard({ accountData }) {
             <div>
               <h2 className="db-page-title">Home</h2>
               <HomeTab accountData={accountData} events={events} hbarPriceUsd={hbarPriceUsd} />
-              <DepositTab />
             </div>
           )}
 

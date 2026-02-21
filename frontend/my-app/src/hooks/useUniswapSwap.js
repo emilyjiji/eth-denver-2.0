@@ -80,7 +80,7 @@ export function useUniswapSwap() {
           tokenIn: WETH_ADDRESS,
           tokenOut: USDC_ADDRESS,
           swapper,
-          slippageTolerance: 0.5,
+          slippageTolerance: 1.0,
         }),
       });
       if (!res.ok) {
@@ -162,6 +162,13 @@ export function useUniswapSwap() {
           ...(swap.gasLimit && { gas: '0x' + BigInt(swap.gasLimit).toString(16) }),
         }],
       });
+
+      // Wait for swap to confirm and verify it succeeded
+      onStep?.('Waiting for swap confirmation…');
+      const receipt = await provider.waitForTransaction(txHash);
+      if (receipt.status === 0) {
+        throw new Error('Swap transaction reverted on-chain');
+      }
 
       return { txHash, explorerUrl: `${EXPLORER_BASE}/tx/${txHash}` };
     } catch (e) {

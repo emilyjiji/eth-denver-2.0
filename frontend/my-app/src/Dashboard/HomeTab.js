@@ -1,7 +1,5 @@
+import { useStreamBalance } from '../hooks/useStreamBalance';
 import './HomeTab.css';
-
-const RELOAD_THRESHOLD = '$5.00';   // trigger reload below this
-const RELOAD_TARGET    = '$200.00'; // reload up to this cap
 
 function copyToClipboard(text) {
   navigator.clipboard?.writeText(text).catch(() => {});
@@ -9,12 +7,32 @@ function copyToClipboard(text) {
 
 function HomeTab({ accountData, events = [], hbarPriceUsd = null }) {
   const wallet = accountData?.generatedWallet;
+  const { depositBalance, loading: balanceLoading } = useStreamBalance();
 
   const totalSpentHbar = events.reduce((s, e) => s + Number(e.cost), 0) / 1e8;
   const totalSpentUsdc = hbarPriceUsd != null ? totalSpentHbar * hbarPriceUsd : null;
-  const usdcDisplay    = totalSpentUsdc != null
-    ? '$' + totalSpentUsdc.toFixed(4)
-    : '…';
+  const usdcDisplay    = totalSpentUsdc != null ? '$' + totalSpentUsdc.toFixed(4) : '…';
+
+  const balanceHbar    = depositBalance != null ? Number(depositBalance) / 1e8 : null;
+  const balanceUsd     = balanceHbar != null && hbarPriceUsd != null
+    ? '$' + (balanceHbar * hbarPriceUsd).toFixed(2)
+    : null;
+  const balanceDisplay = balanceLoading ? '…' : balanceHbar != null
+    ? balanceHbar.toFixed(2) + ' HBAR'
+    : '—';
+
+  const lastEvent      = events.length > 0 ? events[events.length - 1] : null;
+
+  const kwhDisplay     = lastEvent
+    ? (Number(lastEvent.usageDelta) / 1000).toFixed(3) + ' kWh'
+    : '—';
+
+  const rateUsdPerKwh  = lastEvent && hbarPriceUsd != null
+    ? (Number(lastEvent.effectiveRate) * 1000 / 1e8) * hbarPriceUsd
+    : null;
+  const rateDisplay    = rateUsdPerKwh != null
+    ? '$' + rateUsdPerKwh.toFixed(4) + ' / kWh'
+    : '—';
 
   return (
     <div className="ht-root">
@@ -23,21 +41,27 @@ function HomeTab({ accountData, events = [], hbarPriceUsd = null }) {
       <div className="ht-stats">
 
         <div className="ht-stat-card">
-          <span className="ht-stat-label">Total Spent</span>
-          <span className="ht-stat-value">{usdcDisplay} USDC</span>
-          <span className="ht-stat-sub">Hedera Testnet</span>
+          <span className="ht-stat-label">Stream Balance</span>
+          <span className="ht-stat-value">{balanceDisplay}</span>
+          <span className="ht-stat-sub">{balanceUsd ? `≈ ${balanceUsd}` : 'Loading price…'}</span>
         </div>
 
         <div className="ht-stat-card">
-          <span className="ht-stat-label">Auto-Reload Cap</span>
-          <span className="ht-stat-value">{RELOAD_TARGET}</span>
-          <span className="ht-stat-sub">Reload target in USDC</span>
+          <span className="ht-stat-label">Spent (last 10h)</span>
+          <span className="ht-stat-value">{usdcDisplay}</span>
+          <span className="ht-stat-sub">Rolling 10-hour window</span>
         </div>
 
         <div className="ht-stat-card">
-          <span className="ht-stat-label">Reload Threshold</span>
-          <span className="ht-stat-value">{RELOAD_THRESHOLD}</span>
-          <span className="ht-stat-sub">Triggers auto-reload</span>
+          <span className="ht-stat-label">Current Usage</span>
+          <span className="ht-stat-value">{kwhDisplay}</span>
+          <span className="ht-stat-sub">{lastEvent ? new Date(lastEvent.timestamp).toLocaleTimeString() : 'No data'}</span>
+        </div>
+
+        <div className="ht-stat-card">
+          <span className="ht-stat-label">Current Rate</span>
+          <span className="ht-stat-value">{rateDisplay}</span>
+          <span className="ht-stat-sub">Current pricing rate</span>
         </div>
 
       </div>
@@ -79,16 +103,6 @@ function HomeTab({ accountData, events = [], hbarPriceUsd = null }) {
             </button>
           )}
         </div>
-      </div>
-
-      {/* ── Reload info strip ── */}
-      <div className="ht-reload-strip">
-        <span className="ht-reload-icon">⚡</span>
-        <span className="ht-reload-text">
-          Hedera Schedule Service checks your balance every hour. If it drops below&nbsp;
-          <strong>{RELOAD_THRESHOLD}</strong>, it automatically reloads to&nbsp;
-          <strong>{RELOAD_TARGET} USDC</strong>.
-        </span>
       </div>
 
     </div>

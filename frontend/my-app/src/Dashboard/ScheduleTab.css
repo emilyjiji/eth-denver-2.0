@@ -1,0 +1,225 @@
+.sb-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Summary stats ── */
+.sb-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.sb-stat {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.sb-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.sb-stat-value--green  { color: #10b981; }
+.sb-stat-value--yellow { color: #f59e0b; }
+.sb-stat-value--red    { color: #ef4444; }
+
+.sb-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+}
+
+/* ── Info strip ── */
+.sb-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f5f3ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.sb-info strong { color: #0A2540; }
+
+/* ── Card ── */
+.sb-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.sb-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sb-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0A2540;
+}
+
+.sb-loading {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.sb-error {
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.sb-empty {
+  padding: 32px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ── Timeline ── */
+.sb-timeline {
+  padding: 8px 0;
+}
+
+.sb-event {
+  display: flex;
+  gap: 0;
+  padding: 0 20px;
+}
+
+.sb-event-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 36px;
+  flex-shrink: 0;
+  padding-top: 14px;
+}
+
+.sb-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.sb-icon--green  { background: #d1fae5; color: #065f46; }
+.sb-icon--yellow { background: #fef3c7; color: #92400e; }
+.sb-icon--red    { background: #fee2e2; color: #991b1b; }
+.sb-icon--blue   { background: #dbeafe; color: #1e40af; }
+.sb-icon--purple { background: #ede9fe; color: #5b21b6; }
+.sb-icon--orange { background: #ffedd5; color: #9a3412; }
+.sb-icon--teal   { background: #ccfbf1; color: #0f766e; }
+
+.sb-event-line {
+  width: 2px;
+  flex: 1;
+  background: #f3f4f6;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+.sb-event:last-child .sb-event-line {
+  display: none;
+}
+
+.sb-event-body {
+  flex: 1;
+  padding: 12px 0 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sb-event-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sb-event-time {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── Badges ── */
+.sb-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sb-badge--green  { background: #d1fae5; color: #065f46; }
+.sb-badge--yellow { background: #fef3c7; color: #92400e; }
+.sb-badge--red    { background: #fee2e2; color: #991b1b; }
+.sb-badge--blue   { background: #dbeafe; color: #1e40af; }
+.sb-badge--purple { background: #ede9fe; color: #5b21b6; }
+.sb-badge--orange { background: #ffedd5; color: #9a3412; }
+.sb-badge--teal   { background: #ccfbf1; color: #0f766e; }
+
+/* ── Detail row ── */
+.sb-detail {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.sb-detail--error { color: #dc2626; }
+
+.sb-dot {
+  color: #d1d5db;
+}
+
+.sb-addr {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 11px;
+}
+
+/* ── Tx link ── */
+.sb-tx-link {
+  font-size: 11px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.sb-tx-link:hover { text-decoration: underline; }

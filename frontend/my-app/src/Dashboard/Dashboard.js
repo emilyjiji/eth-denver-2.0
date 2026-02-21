@@ -3,6 +3,8 @@ import './Dashboard.css';
 import Transactions from './Transactions';
 import HomeTab from './HomeTab';
 import InsightsTab from './InsightsTab';
+import DepositTab from './DepositTab';
+import ScheduleTab from './ScheduleTab';
 import { useOnChainUsage } from '../hooks/useOnChainUsage';
 import { useHbarPrice } from '../hooks/useHbarPrice';
 
@@ -14,6 +16,16 @@ const NAV_ITEMS = [
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1V6.5z" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinejoin="round"/>
         <path d="M6 15v-5h4v5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'deposit',
+    label: 'Deposit',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.4" fill="none"/>
+        <path d="M8 5v6M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
@@ -34,6 +46,17 @@ const NAV_ITEMS = [
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M2 12l3.5-4 3 2.5L12 5l2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
         <circle cx="14" cy="7" r="1" fill="currentColor"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'schedule',
+    label: 'Schedules',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" fill="none"/>
+        <path d="M5 2v2M11 2v2M2 7h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <circle cx="8" cy="11" r="1.5" fill="currentColor"/>
       </svg>
     ),
   },
@@ -109,6 +132,13 @@ function Dashboard({ accountData }) {
             </div>
           )}
 
+          {active === 'deposit' && (
+            <div>
+              <h2 className="db-page-title">Deposit</h2>
+              <DepositTab />
+            </div>
+          )}
+
           {active === 'transactions' && (
             <div>
               <h2 className="db-page-title">Transactions</h2>
@@ -122,6 +152,13 @@ function Dashboard({ accountData }) {
             <div>
               <h2 className="db-page-title">Insights</h2>
               <InsightsTab events={events} loading={eventsLoading} hbarPriceUsd={hbarPriceUsd} />
+            </div>
+          )}
+
+          {active === 'schedule' && (
+            <div>
+              <h2 className="db-page-title">Schedules</h2>
+              <ScheduleTab />
             </div>
           )}
 

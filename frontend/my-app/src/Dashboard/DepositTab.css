@@ -1,0 +1,393 @@
+.dt-root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Card ── */
+.dt-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header ── */
+.dt-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.dt-header-icon {
+  width: 40px;
+  height: 40px;
+  background: #f5f3ff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dt-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0A2540;
+  margin: 0 0 3px;
+}
+
+.dt-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.dt-powered-by {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  padding: 4px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+}
+
+/* ── Connect prompt ── */
+.dt-connect-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 8px;
+}
+
+.dt-connect-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ── Wallet row ── */
+.dt-wallet-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.dt-wallet-dot {
+  width: 7px;
+  height: 7px;
+  background: #10b981;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dt-wallet-addr {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 13px;
+  color: #111827;
+}
+
+.dt-wallet-network {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6366f1;
+  background: #f5f3ff;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ── Input ── */
+.dt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dt-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+}
+
+.dt-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.dt-input-wrap:focus-within {
+  border-color: #6366f1;
+}
+
+.dt-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 13px 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0A2540;
+  background: transparent;
+  width: 0;
+}
+
+.dt-input::placeholder {
+  color: #d1d5db;
+}
+
+.dt-input:disabled {
+  opacity: 0.5;
+}
+
+.dt-token-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  border-left: 1.5px solid #e5e7eb;
+  height: 100%;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+/* ── Quote loading ── */
+.dt-quote-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  padding: 4px 0;
+}
+
+/* ── Quote card ── */
+.dt-quote-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dt-quote-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dt-quote-row--main {
+  margin-bottom: 2px;
+}
+
+.dt-quote-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 2px 0;
+}
+
+.dt-quote-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.dt-quote-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0A2540;
+}
+
+.dt-quote-token {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-left: 2px;
+}
+
+.dt-quote-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.dt-quote-note {
+  font-size: 12px;
+  color: #6366f1;
+  background: #f5f3ff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+/* ── Error ── */
+.dt-error {
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* ── Status row ── */
+.dt-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.dt-status-text {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ── Spinner ── */
+.dt-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: dt-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes dt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Buttons ── */
+.dt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  border: none;
+}
+
+.dt-btn--full {
+  width: 100%;
+}
+
+.dt-btn--primary {
+  background: #6366f1;
+  color: #fff;
+}
+
+.dt-btn--primary:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.dt-btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dt-btn--secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.dt-btn--secondary:hover {
+  background: #e5e7eb;
+}
+
+/* ── Success ── */
+.dt-success {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dt-success-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.dt-success-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dt-success-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+
+.dt-success-step--warn {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.dt-warn-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dt-success-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0A2540;
+}
+
+.dt-success-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.dt-success-link {
+  font-size: 12px;
+  color: #6366f1;
+  text-decoration: none;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.dt-success-link:hover {
+  text-decoration: underline;
+}

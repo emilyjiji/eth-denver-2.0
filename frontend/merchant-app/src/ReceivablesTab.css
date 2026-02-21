@@ -5,10 +5,10 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* ── Summary stats ── */
+/* ── Summary cards ── */
 .rv-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 
@@ -44,6 +44,10 @@
   color: #9ca3af;
 }
 
+.rv-stat--accent .rv-stat-value {
+  color: #059669;
+}
+
 /* ── Section ── */
 .rv-section {
   display: flex;
@@ -58,7 +62,7 @@
   margin: 0;
 }
 
-/* ── Table ── */
+/* ── Shared table wrap ── */
 .rv-table-wrap {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -67,6 +71,130 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
+/* ── Day group ── */
+.rv-day-group {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.rv-day-group:last-child {
+  border-bottom: none;
+}
+
+.rv-day-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.rv-day-header:hover {
+  background: #f9fafb;
+}
+
+.rv-day-chevron {
+  color: #9ca3af;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.rv-day-chevron[data-open="false"] {
+  transform: rotate(-90deg);
+}
+
+.rv-day-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.rv-day-count {
+  font-size: 12px;
+  color: #9ca3af;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.rv-day-spacer { flex: 1; }
+
+.rv-day-kwh {
+  font-size: 13px;
+  color: #6b7280;
+  margin-right: 8px;
+}
+
+.rv-day-total {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* ── Row grid (inside day group) ── */
+.rv-day-rows {
+  padding: 0 0 8px 16px;
+}
+
+.rv-row-grid {
+  display: grid;
+  grid-template-columns: 90px 1fr 80px 110px 140px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.rv-row-grid--header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+}
+
+.rv-row-grid--data {
+  padding: 11px 8px;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 6px;
+  transition: background 0.1s;
+}
+
+.rv-row-grid--data:last-child {
+  border-bottom: none;
+}
+
+.rv-row-grid--data:hover {
+  background: #f9fafb;
+}
+
+.rv-col {
+  font-size: 13.5px;
+  color: #374151;
+}
+
+.rv-col--dim {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.rv-col--muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.rv-col--right {
+  text-align: right;
+}
+
+/* ── Settlements table ── */
 .rv-table {
   width: 100%;
   border-collapse: collapse;
@@ -100,20 +228,20 @@
 
 .rv-td--right { text-align: right; }
 
-/* Customer cell */
+/* ── Customer cell ── */
 .rv-customer-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .rv-avatar {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #e0e7ff;
   color: #4f46e5;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -128,17 +256,17 @@
 }
 
 .rv-customer-name {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: #111827;
 }
 
 .rv-customer-email {
-  font-size: 11.5px;
+  font-size: 11px;
   color: #9ca3af;
 }
 
-/* Amount cell */
+/* ── Amount cell ── */
 .rv-amount-cell {
   display: flex;
   flex-direction: column;
@@ -152,27 +280,21 @@
   color: #111827;
 }
 
-.rv-amount-usd.rv-paid {
-  color: #059669;
-}
+.rv-amount-usd.rv-paid { color: #059669; }
 
 .rv-amount-hbar {
   font-size: 11px;
   color: #9ca3af;
 }
 
-.rv-muted {
-  color: #6b7280;
-  font-size: 13px;
-}
+.rv-muted { color: #6b7280; font-size: 13px; }
 
 .rv-mono {
   font-variant-numeric: tabular-nums;
   font-size: 13px;
-  color: #374151;
 }
 
-/* Hash link */
+/* ── Hash link ── */
 .rv-link {
   font-family: 'SFMono-Regular', Consolas, monospace;
   font-size: 12px;
@@ -181,13 +303,10 @@
 }
 
 .rv-link:hover { text-decoration: underline; }
-
 .rv-no-hash { color: #d1d5db; }
 
-/* States */
-.rv-loading,
-.rv-error,
-.rv-empty {
+/* ── States ── */
+.rv-loading, .rv-error, .rv-empty {
   padding: 48px;
   text-align: center;
   font-size: 14px;

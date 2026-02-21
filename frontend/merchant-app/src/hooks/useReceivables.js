@@ -7,6 +7,10 @@ const CONTRACT_ADDRESS = '0xc4A1Ef40bC4771D8c2f5352429A737a980B40692';
 const POLL_INTERVAL_MS = 30_000;
 const LOOKBACK_BLOCKS  = 12_000; // ~10 hours on Hedera testnet
 
+// Hide events before this cutoff (old test data at bad rates).
+// Matches the same cutoff used in the customer Dashboard.
+const CUTOFF_MS = new Date('2026-02-20T15:55:00').getTime();
+
 // Stream ID → customer metadata
 const STREAM_CUSTOMERS = {
   3: { name: 'Emily Jiji', email: 'emilyjiji418@gmail.com' },
@@ -96,8 +100,14 @@ export function useReceivables() {
         );
 
         if (!cancelled) {
-          setCharges(parsedCharges.sort((a, b) => b.timestamp - a.timestamp));
-          setSettlements(parsedSettlements.sort((a, b) => b.timestamp - a.timestamp));
+          // Charges: only known customers + after cutoff (drop test stream noise)
+          setCharges(parsedCharges
+            .filter(e => e.timestamp >= CUTOFF_MS && STREAM_CUSTOMERS[e.streamId])
+            .sort((a, b) => b.timestamp - a.timestamp));
+          // Settlements: all after cutoff — real money received, even from unnamed streams
+          setSettlements(parsedSettlements
+            .filter(e => e.timestamp >= CUTOFF_MS)
+            .sort((a, b) => b.timestamp - a.timestamp));
           setError(null);
         }
       } catch (err) {

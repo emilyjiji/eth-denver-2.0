@@ -1,4 +1,4 @@
-# gimme.money
+# StreamPay
 **Emily, Simran & Hannah — ETH Denver 2025**
 
 Real-world asset tokenization of utility receivables with cross-chain payment streaming. Automated electricity metering on Hedera (using Schedule Service) mints NFT receivables on ADI Chain for factoring and liquidity.

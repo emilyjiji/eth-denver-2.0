@@ -16,9 +16,13 @@
  */
 
 import * as http from "http";
+import * as fs from "fs";
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
 import * as path from "path";
+
+const LOG_FILE = "/tmp/swap-debug.log";
+fs.writeFileSync(LOG_FILE, `=== relay started ${new Date().toISOString()} ===\n`);
 dotenv.config({ path: path.resolve(__dirname, "../frontend/my-app/.env.local") });
 
 // ── Config ──────────────────────────────────────────────────────────────────
@@ -36,6 +40,14 @@ const TOP_UP_ABI = [
   "function topUpDeposit(uint256 streamId) external payable",
   "function getStreamInfo(uint256 streamId) external view returns (uint256,address,bool,uint256,uint256,uint256,uint256,uint256,uint256,address,uint256)",
 ];
+
+// ── Logging ──────────────────────────────────────────────────────────────────
+
+function rlog(msg: string) {
+  const line = `[${new Date().toISOString()}] [relay] ${msg}`;
+  console.log(line);
+  fs.appendFileSync(LOG_FILE, line + "\n");
+}
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -102,39 +114,39 @@ async function handleFundStream(
   }
 
   try {
-    console.log(`[relay] New fund-stream request`);
-    console.log(`  swapTxHash : ${swapTxHash ?? "n/a"}`);
-    console.log(`  usdcAmount : ${usdcAmount} (raw 6-decimal USDC units)`);
-    console.log(`  streamId   : ${streamId ?? DEFAULT_STREAM_ID}`);
+    rlog(`New fund-stream request`);
+    rlog(`  swapTxHash : ${swapTxHash ?? "n/a"}`);
+    rlog(`  usdcAmount : ${usdcAmount} (raw 6-decimal USDC units)`);
+    rlog(`  streamId   : ${streamId ?? DEFAULT_STREAM_ID}`);
 
     // 1. Get live HBAR price
     const hbarPrice = await getHbarPriceUsd();
-    console.log(`  HBAR price : $${hbarPrice}`);
+    rlog(`  HBAR price : $${hbarPrice}`);
 
     // 2. Calculate HBAR equivalent
     const targetStreamId = streamId ?? DEFAULT_STREAM_ID;
     const hbarAmount = usdcToHbar(usdcAmount, hbarPrice);
-    const hbarWei = ethers.parseEther(hbarAmount.toFixed(8)); // 18-decimal EVM value
+    const hbarWei = ethers.parseEther(hbarAmount.toFixed(8));
     const usdcValue = (Number(BigInt(usdcAmount)) / 1e6).toFixed(2);
 
-    console.log(`  hbarAmount : ${hbarAmount.toFixed(4)} HBAR`);
-    console.log(`  hbarWei    : ${hbarWei.toString()}`);
+    rlog(`  hbarAmount : ${hbarAmount.toFixed(4)} HBAR`);
+    rlog(`  hbarWei    : ${hbarWei.toString()}`);
 
     // 3. Connect to Hedera and call topUpDeposit
     const provider = new ethers.JsonRpcProvider(HEDERA_RPC);
     const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
     const contract = new ethers.Contract(CONTRACT_ADDRESS, TOP_UP_ABI, wallet);
 
-    console.log(`  relay addr : ${wallet.address}`);
+    rlog(`  relay addr : ${wallet.address}`);
     const balance = await provider.getBalance(wallet.address);
-    console.log(`  relay bal  : ${ethers.formatEther(balance)} HBAR`);
+    rlog(`  relay bal  : ${ethers.formatEther(balance)} HBAR`);
 
     const tx = await contract.topUpDeposit(BigInt(targetStreamId), {
       value: hbarWei,
     });
-    console.log(`  hedera tx  : ${tx.hash}`);
+    rlog(`  hedera tx  : ${tx.hash}`);
     const receipt = await tx.wait();
-    console.log(`  confirmed  : block ${receipt?.blockNumber}`);
+    rlog(`  confirmed  : block ${receipt?.blockNumber}`);
 
     return json(res, 200, {
       success: true,
@@ -164,6 +176,22 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === "POST" && req.url === "/fund-stream") {
     return handleFundStream(req, res);
+  }
+
+  if (req.method === "POST" && req.url === "/log") {
+    let body = "";
+    req.on("data", (d) => (body += d));
+    req.on("end", () => {
+      try {
+        const { msg } = JSON.parse(body);
+        const line = `[${new Date().toISOString()}] ${msg}\n`;
+        fs.appendFileSync(LOG_FILE, line);
+      } catch {}
+      cors(res);
+      res.writeHead(204);
+      res.end();
+    });
+    return;
   }
 
   if (req.method === "GET" && req.url === "/health") {

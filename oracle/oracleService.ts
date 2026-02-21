@@ -154,7 +154,7 @@ export class OracleService {
     const sample = this.simulator.generateHourlyUsage();
 
     // 3. Calculate pricing.
-    const hour             = new Date().getUTCHours();
+    const hour             = new Date().getHours();
     const baseRate         = this.pricing.getBaseRate(hour);
     const loadPercent      = this.pricing.simulateCongestion();
     const congestionFactor = this.pricing.getCongestionFactor(loadPercent);

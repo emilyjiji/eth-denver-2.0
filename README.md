@@ -1,121 +1,192 @@
 # gimme.money
-Emily, Simran & Hannah — ETH Denver 2025
+**Emily, Simran & Hannah — ETH Denver 2025**
 
-Cross-chain electricity payment streams: swap ETH → USDC on Base via Uniswap, relay converts to HBAR, and funds a self-scheduling Hedera payment stream using the Hedera Schedule Service (HSS).
+Real-world asset tokenization of utility receivables with cross-chain payment streaming. Automated electricity metering on Hedera (using Schedule Service) mints NFT receivables on ADI Chain for factoring and liquidity.
+
+---
+
+## What It Does
+
+Cross-chain utility payment infrastructure demonstrating:
+1. **Hedera**: Self-perpetuating payment streams using Schedule Service (HSS) for hourly electricity metering
+2. **ADI Chain**: RWA tokenization of utility receivables as NFTs with native $ADI payment support
+3. **Cross-chain relay**: Listens to Hedera settlement events, mints corresponding receivables on ADI
+4. **Dual frontends**: Customer dashboard (React) + Merchant dashboard (Vite)
+
+**Live Demo**: 1 OUTSTANDING receivable NFT successfully minted cross-chain
 
 ---
 
 ## Architecture
 
 ```
-User (MetaMask)
-    │  ETH
-    ▼
-Uniswap API (Base Sepolia)
-    │  USDC
-    ▼
-Base→Hedera Relay (localhost:3001)
-    │  HBAR  topUpDeposit()
-    ▼
-ElectricityPaymentStream (Hedera Testnet)
-    │  HSS auto-schedules settle()
-    ▼
-Energy Provider
+┌─────────────────────────────────────────────────────────────┐
+│  HEDERA TESTNET                                             │
+│  ElectricityPaymentStream.sol                               │
+│  - Oracle reports usage + pricing every 5 min               │
+│  - HSS auto-schedules settle() every hour                   │
+│  - Emits: SettlementExecuted, SettlementFailed              │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 │ Cross-chain relay (hederaToADI.ts)
+                 │ Polls events every 12s
+                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ADI TESTNET                                                │
+│  UtilityReceivable.sol                                      │
+│  - Mints NFTs: OUTSTANDING (failed) or PAID (success)       │
+│  - Custom ERC721-like with native $ADI @ $3.10              │
+│  - Status: OUTSTANDING, FACTORED, PARTIAL, PAID, DEFAULTED  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Setup
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- Chrome + MetaMask extension
-- Base Sepolia ETH (see faucets below)
+- MetaMask with Hedera & ADI testnet configured
 
-### 1. Clone & install
+### 1. Install dependencies
 
 ```bash
 git clone https://github.com/emilyjiji/eth-denver-2.0.git
 cd eth-denver-2.0
 npm install
-cd frontend/my-app && npm install && cd ../..
 ```
 
-### 2. Create `frontend/my-app/.env.local`
+### 2. Configure environment
 
-```env
-REACT_APP_UNISWAP_API_KEY=<your Uniswap API key>
-REACT_APP_CHAIN_ID=84532
-REACT_APP_RELAY_URL=http://localhost:3001
-REACT_APP_STREAM_ID=3
-RELAY_PRIVATE_KEY=<hedera testnet wallet private key — must be stream payer>
-```
-
-> **Never commit `.env.local`** — it's gitignored.
-
-Get a Uniswap API key at https://developer.uniswap.org
-Get a Hedera testnet account at https://portal.hedera.com
-
-### 3. Get Base Sepolia ETH
-
-- https://faucet.quicknode.com/base/sepolia
-- https://www.coinbase.com/faucets/base-ethereum-goerli-faucet
-
-### 4. Start the relay
+Copy `.env.example` to `.env` and fill in:
 
 ```bash
-npm run relay:base
-# Listening on http://localhost:3001
+# Hedera
+HEDERA_RPC=https://testnet.hashio.io/api
+DEPLOYER_PRIVATE_KEY=0x...
+HEDERA_STREAM_ADDRESS=0xc4A1Ef40bC4771D8c2f5352429A737a980B40692
+
+# ADI
+ADI_RPC=https://rpc.ab.testnet.adifoundation.ai
+ADI_CHAIN_ID=99999
+RELAY_PRIVATE_KEY=0x...
+ADI_CERTIFICATE_ADDRESS=0x31246c37f75cC7fe6f669651c66d27E6708De1b1
 ```
 
-### 5. Start the frontend
+### 3. Run tests (161 passing)
 
+```bash
+npm test                    # All tests (Hedera + ADI)
+npm run test:adi            # ADI UtilityReceivable tests only
+```
+
+### 4. Start cross-chain relay
+
+```bash
+npm run relay               # Hedera → ADI relay
+```
+
+### 5. Launch frontends
+
+**Customer Dashboard** (React):
 ```bash
 cd frontend/my-app
-npm start
-# Opens http://localhost:3000
+npm install
+npm start                   # http://localhost:3000
+```
+
+**Merchant Dashboard** (Vite):
+```bash
+cd frontend/merchant-app
+npm install
+npm run dev                 # http://localhost:5173
 ```
 
 ---
 
-## Testing the Deposit Flow
-
-1. Open http://localhost:3000 in Chrome
-2. Go to the **Deposit** tab
-3. Connect MetaMask — MetaMask will prompt you to switch to Base Sepolia
-4. Enter an ETH amount (e.g. `0.001`)
-5. Wait for the Uniswap quote to appear
-6. Click **Swap & Fund Stream** and approve the prompts in MetaMask:
-   - Wrap ETH → WETH
-   - Sign Permit2 approval
-   - Confirm swap transaction
-7. The relay automatically converts the USDC output to HBAR and calls `topUpDeposit()` on Hedera testnet
-8. Success screen shows links to Basescan (swap tx) and Hashscan (Hedera tx)
-
----
-
-## Scripts
+## Key Commands
 
 | Command | Description |
-|---|---|
-| `npm run relay:base` | Start Base→Hedera relay |
-| `npm run relay` | Start Hedera→ADI relay |
+|---------|-------------|
+| `npm test` | Run all tests (161 passing) |
 | `npm run compile` | Compile Solidity contracts |
-| `npm run test` | Run Hardhat tests |
+| `npm run relay` | Start Hedera→ADI event listener |
+| `npm run relay:base` | Start Base→Hedera deposit relay |
 | `npm run settle` | Manually trigger settlement |
-| `npm run settle:success` | Top up + settle |
+| `npm run deploy:adi` | Deploy UtilityReceivable to ADI |
+| `npm run start:oracle` | Start usage/pricing oracle |
 
 ---
 
-## Contracts (Hedera Testnet)
+## Deployed Contracts
 
-| Contract | Address |
-|---|---|
-| ElectricityPaymentStream | `0xc4A1Ef40bC4771D8c2f5352429A737a980B40692` |
+**Hedera Testnet**:
+- `ElectricityPaymentStream`: [`0xc4A1Ef40bC4771D8c2f5352429A737a980B40692`](https://hashscan.io/testnet/contract/0xc4A1Ef40bC4771D8c2f5352429A737a980B40692)
+
+**ADI Testnet**:
+- `UtilityReceivable`: [`0x31246c37f75cC7fe6f669651c66d27E6708De1b1`](https://scan.ab.testnet.adifoundation.ai/address/0x31246c37f75cC7fe6f669651c66d27E6708De1b1)
 
 ---
 
-## Bounties
+## Project Structure
 
-- **Uniswap API** — ETH→USDC swap on Base Sepolia using the Uniswap Trading API with auto WETH wrapping and Permit2
-- **Hedera HSS** — Self-perpetuating payment streams via the Hedera Schedule Service; `settle()` re-schedules itself on each execution
+```
+contracts/
+  ElectricityPaymentStream.sol    # Hedera: HSS-powered payment streams
+  adi/UtilityReceivable.sol        # ADI: RWA NFT receivables
+  MockElectricityOracle.sol        # On-chain oracle for testing
+  MockHSSPrecompile.sol            # Hedera Schedule Service mock
+
+relay/
+  hederaToADI.ts                   # Cross-chain event relay
+  baseToHedera.ts                  # Base→Hedera deposit bridge
+
+frontend/
+  my-app/                          # Customer dashboard (React)
+  merchant-app/                    # Merchant/provider dashboard (Vite)
+
+test/
+  ElectricityPaymentStream.test.ts # 27 Hedera contract tests
+  UtilityReceivable.test.ts        # 61 ADI contract tests
+  oraclePricing.test.ts            # 73 oracle simulation tests
+
+oracle/
+  run.ts                           # Usage/pricing data simulator
+```
+
+---
+
+## Bounties Targeted
+
+**Hedera Schedule Service ($5,000)**:
+- Self-perpetuating payment streams using HSS (IHRC-1215)
+- `settle()` automatically re-schedules itself each execution
+- Dynamic congestion-based pricing with PRNG capacity probing
+- 27 passing tests covering schedule lifecycle
+
+**ADI RWA/DePIN ($10,000-$19,000)**:
+- Utility receivables tokenized as NFTs on ADI Chain
+- Native $ADI payments with hardcoded $3.10 price
+- Custom ERC721-like implementation (no OpenZeppelin)
+- Cross-chain minting from Hedera settlement events
+- 61 passing tests with full status lifecycle (OUTSTANDING → FACTORED → PAID)
+
+---
+
+## How to Demo
+
+1. **View deployed contracts** on block explorers (links above)
+2. **Run tests**: `npm test` shows 161 passing
+3. **Start relay**: `npm run relay` - monitors Hedera, mints on ADI
+4. **Customer UI**: Shows stream balance, usage, deposit flow
+5. **Merchant UI**: Manages receivables, customers, factoring
+
+---
+
+## Technical Highlights
+
+- **Hedera Schedule Service**: True contract-initiated scheduling, no external cron jobs
+- **ADI Native Integration**: Direct $ADI token handling with price conversion
+- **Custom NFT**: Gas-optimized receivable NFTs without OpenZeppelin overhead
+- **Cross-chain Events**: Reliable event polling with deduplication
+- **Comprehensive Tests**: 161 tests covering edge cases, reentrancy, access control
